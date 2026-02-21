@@ -1,33 +1,34 @@
 "use client"
 
 import Link from "next/link"
-import { type LucideIcon } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, } from "@/components/ui/sidebar"
 import * as React from "react"
 
 export function NavMain({
+                            label,
                             items,
                         }: {
+    label: string
     items: {
         title: string
         url: string
-        icon?: LucideIcon
+        icon?: React.ElementType // Tabler & Lucide 아이콘
     }[]
 }) {
-    const pathname = usePathname() // 현재 경로
+    const pathname = usePathname()
 
     return (
         <SidebarGroup>
-            <SidebarGroupLabel>Dataground</SidebarGroupLabel>
+            <SidebarGroupLabel>{label}</SidebarGroupLabel>
             <SidebarMenu>
                 {items.map((item) => (
                     <SidebarMenuItem key={item.title}>
                         <SidebarMenuButton
                             asChild
                             tooltip={item.title}
-                            isActive={pathname === item.url} // 현재 경로와 비교
-                            className="data-[active=true]:bg-sidebar-foreground/10" // 선택 메뉴 배경 어둡게
+                            isActive={pathname === item.url}
+                            className="data-[active=true]:bg-sidebar-foreground/10"
                         >
                             <Link href={item.url}>
                                 {item.icon && (
