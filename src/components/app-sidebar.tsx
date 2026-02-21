@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Trophy, Timer, Shell, Map, PieChart, LineSquiggle, ClipboardList, } from "lucide-react"
+// AI Agent용 아이콘으로 Bot 추가
+import { Trophy, Timer, Shell, Map, PieChart, LineSquiggle, ClipboardList, Bot, Sparkles } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
@@ -10,7 +11,6 @@ import { ServiceLogo } from "@/components/service-logo"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail, } from "@/components/ui/sidebar"
 import { IconBorderCornerPill, IconCar4wd, IconHelmet, IconCalendarEvent, } from "@tabler/icons-react";
 
-// This is sample data.
 const data = {
     user: {
         name: "Charles Lucvs",
@@ -22,6 +22,14 @@ const data = {
         url: "/dashboard",
         icon: IconBorderCornerPill,
     },
+    // AI Agent 전용 메뉴 데이터 추가
+    aiAgent: [
+        {
+            title: "Apex Assistant",
+            url: "/dashboard/agent/chat",
+            icon: Sparkles,
+        },
+    ],
     navMain: [
         {
             title: "Schedules",
@@ -85,7 +93,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <ServiceLogo logo={data.logo} />
             </SidebarHeader>
             <SidebarContent>
-                <NavMain items={data.navMain} />
+                {/* AI Agent 그룹을 최상단에 추가 */}
+                <NavMain label="AI Agent" items={data.aiAgent} />
+                {/* 기존 Dataground 그룹 */}
+                <NavMain label="Dataground" items={data.navMain} />
                 <NavProjects projects={data.projects} />
             </SidebarContent>
             <SidebarFooter>
