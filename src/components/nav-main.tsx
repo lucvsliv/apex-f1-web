@@ -13,14 +13,16 @@ export function NavMain({
     items: {
         title: string
         url: string
-        icon?: React.ElementType // Tabler & Lucide 아이콘
+        icon?: React.ElementType
     }[]
 }) {
     const pathname = usePathname()
 
     return (
         <SidebarGroup>
-            <SidebarGroupLabel>{label}</SidebarGroupLabel>
+            <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">
+                {label}
+            </SidebarGroupLabel>
             <SidebarMenu>
                 {items.map((item) => (
                     <SidebarMenuItem key={item.title}>
@@ -33,11 +35,13 @@ export function NavMain({
                             <Link href={item.url}>
                                 {item.icon && (
                                     <item.icon
-                                        className="!size-4.5"
+                                        className="shrink-0 !size-4.5"
                                         strokeWidth={1.7}
                                     />
                                 )}
-                                <span>{item.title}</span>
+                                <span className="truncate group-data-[collapsible=icon]:hidden">
+                                    {item.title}
+                                </span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
