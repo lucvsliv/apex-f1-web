@@ -18,29 +18,55 @@ export default function AgentChat() {
     const [input, setInput] = React.useState("");
     const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
-    const handleSend = () => {
+    const handleSend = async () => {
         if (!input.trim()) return;
 
+        const userMessage = input;
         const newMessage: Message = {
             id: Date.now().toString(),
             role: "user",
-            content: input,
+            content: userMessage,
         };
 
         setMessages((prev) => [...prev, newMessage]);
         setInput("");
 
-        // 백엔드(Apex-F1-API) 통신 대기 시뮬레이션
-        setTimeout(() => {
+        try {
+            // Spring Boot 백엔드로 POST 요청 전송
+            const response = await fetch("http://localhost:8080/api/v1/agent/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ message: userMessage }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+
+            const data = await response.json();
+
+            // 백엔드에서 온 응답을 채팅창에 추가
             setMessages((prev) => [
                 ...prev,
                 {
                     id: (Date.now() + 1).toString(),
                     role: "assistant",
-                    content: "해당 질문에 대한 처리는 아직 백엔드 API와 연결되지 않았습니다. API 연동을 준비해주세요!",
+                    content: data.response,
                 }
             ]);
-        }, 1000);
+        } catch (error) {
+            console.error("API 연동 에러:", error);
+            setMessages((prev) => [
+                ...prev,
+                {
+                    id: (Date.now() + 1).toString(),
+                    role: "assistant",
+                    content: "서버와 연결할 수 없습니다. 백엔드(8080 포트)가 실행 중인지 확인해 주세요!",
+                }
+            ]);
+        }
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
