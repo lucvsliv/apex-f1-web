@@ -72,6 +72,7 @@ export default function AgentChat() {
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
+            if (e.nativeEvent.isComposing) { return; }
             handleSend();
         }
     };
