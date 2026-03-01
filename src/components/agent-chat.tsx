@@ -6,6 +6,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbS
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import api from "@/lib/api/client";
 
 type Message = {
     id: string;
@@ -18,10 +19,13 @@ export default function AgentChat() {
     const [input, setInput] = React.useState("");
     const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
+    // Axios 사용
     const handleSend = async () => {
         if (!input.trim()) return;
 
         const userMessage = input;
+
+        // 1. 유저 메시지를 화면에 먼저 렌더링 (낙관적 업데이트)
         const newMessage: Message = {
             id: Date.now().toString(),
             role: "user",
@@ -29,41 +33,31 @@ export default function AgentChat() {
         };
 
         setMessages((prev) => [...prev, newMessage]);
-        setInput("");
+        setInput(""); // 전송 후 입력창 비우기
 
         try {
-            // Spring Boot 백엔드로 POST 요청 전송
-            const response = await fetch("http://localhost:8080/api/v1/agent/chat", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ message: userMessage }),
-            });
+            // 2. Axios 인스턴스로 API 통신 (토큰은 Interceptor가 알아서 헤더에 주입)
+            const response = await api.post("/agent/chat", { message: userMessage });
 
-            if (!response.ok) {
-                throw new Error("Network response was not ok");
-            }
-
-            const data = await response.json();
-
-            // 백엔드에서 온 응답을 채팅창에 추가
+            // 3. 백엔드 응답을 화면에 추가
+            // (주의: 백엔드의 실제 응답 필드명에 따라 response.data.response 부분을 수정해야 할 수 있습니다)
             setMessages((prev) => [
                 ...prev,
                 {
                     id: (Date.now() + 1).toString(),
                     role: "assistant",
-                    content: data.response,
+                    content: response.data.response || "응답을 받았습니다. (백엔드 구조에 맞게 매핑 필요)",
                 }
             ]);
         } catch (error) {
-            console.error("API 연동 에러:", error);
+            console.error("채팅 전송 실패:", error);
+            // 401/403은 Interceptor가 처리하므로, 여기서는 500 에러나 네트워크 연결 에러 등을 처리합니다.
             setMessages((prev) => [
                 ...prev,
                 {
                     id: (Date.now() + 1).toString(),
                     role: "assistant",
-                    content: "서버와 연결할 수 없습니다. 백엔드(8080 포트)가 실행 중인지 확인해 주세요!",
+                    content: "서버와 연결할 수 없거나 요청 처리 중 오류가 발생했습니다.",
                 }
             ]);
         }
