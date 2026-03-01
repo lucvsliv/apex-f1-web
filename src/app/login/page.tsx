@@ -17,7 +17,6 @@ export default function LoginPage() {
         // 2. 카카오 로그인 팝업 호출
         window.Kakao.Auth.login({
             success: async function (authObj: any) {
-                console.log("authObj", authObj);
                 console.log("카카오 로그인 성공! Token:", authObj.access_token);
 
                 try {
