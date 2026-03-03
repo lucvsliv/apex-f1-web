@@ -6,7 +6,6 @@ export default function LoginPage() {
             <div className="w-full max-w-sm md:max-w-4xl">
                 <LoginForm
                     title="Welcome back"
-                    description="Apex F1 Agent에 로그인하고 기록을 확인하세요."
                 />
             </div>
         </div>

@@ -149,8 +149,7 @@ export function SignupForm({
                         </FieldGroup>
                     </form>
 
-                    <div className="relative hidden md:block bg-gradient-to-br from-stone-100 via-neutral-300 to-stone-500">
-                        {/* 💡 이미지 경로 및 object-contain 적용 */}
+                    <div className="relative hidden md:block bg-stone-200">
                         <img
                             src="/logo/apex-f1-logo.png"
                             alt="Apex F1 Logo"

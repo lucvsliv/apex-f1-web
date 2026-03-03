@@ -139,7 +139,7 @@ export function LoginForm({
                         </FieldGroup>
                     </form>
                     {/* 오른쪽 이미지 영역 */}
-                    <div className="relative hidden md:block bg-gradient-to-br from-stone-100 via-neutral-300 to-stone-500">
+                    <div className="relative hidden md:block bg-stone-200">
                         <img
                             src="/logo/apex-f1-logo.png"
                             alt="Apex F1 Logo"
