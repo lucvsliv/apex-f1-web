@@ -8,6 +8,9 @@ import {
     IconUserCircle,
 } from "@tabler/icons-react"
 
+import { useRouter } from "next/navigation"
+import { useUserStore } from "@/store/useUserStore"
+
 import {
     Avatar,
     AvatarFallback,
@@ -39,6 +42,21 @@ export function NavUser({
     }
 }) {
     const { isMobile } = useSidebar()
+    const router = useRouter()
+    const { clearUser } = useUserStore()
+
+    // 로그아웃 핸들러
+    const handleLogout = () => {
+        // 1. 로컬 스토리지에서 JWT 토큰 삭제
+        localStorage.removeItem("apex_access_token")
+
+        // 2. Zustand 스토어 유저 정보 초기화
+        clearUser()
+
+        // 3. 로그인 페이지로 리다이렉트 (필요 시 알림 추가)
+        alert("로그아웃 되었습니다.")
+        router.push("/login")
+    }
 
     return (
         <SidebarMenu>
@@ -98,7 +116,7 @@ export function NavUser({
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600 focus:text-red-700 focus:bg-red-50">
                             <IconLogout />
                             Log out
                         </DropdownMenuItem>

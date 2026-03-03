@@ -173,7 +173,7 @@ export function ResultTable() {
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <Select value={session} onValueChange={setSession}>
-                            <SelectTrigger className="w-[120px] text-sm">
+                            <SelectTrigger className="w-fit text-sm">
                                 <SelectValue placeholder="Session" />
                             </SelectTrigger>
                             <SelectContent className="border-gray-200">

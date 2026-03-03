@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import api from "@/lib/api/client";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 
 type Message = {
     id: string;
@@ -90,7 +91,14 @@ export default function AgentChat() {
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <span className="text-sm text-muted-foreground">Apex Assistant</span>
+                        <Select>
+                            <SelectTrigger className="w-fit text-sm">
+                                <SelectValue placeholder="Apex Assistant" />
+                            </SelectTrigger>
+                            <SelectContent className="border-gray-200">
+                                <SelectItem value="Apex Assistant">Apex Assistant</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
