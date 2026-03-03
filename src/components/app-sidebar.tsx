@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-// AI Agent용 아이콘으로 Bot 추가
+import { useEffect } from "react"
 import { Trophy, Timer, Shell, Map, PieChart, LineSquiggle, ClipboardList, Bot, Sparkles } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -11,18 +11,16 @@ import { ServiceLogo } from "@/components/service-logo"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail, } from "@/components/ui/sidebar"
 import { IconBorderCornerPill, IconCar4wd, IconHelmet, IconCalendarEvent, } from "@tabler/icons-react";
 
+// Zustand 스토어 임포트
+import { useUserStore } from "@/store/useUserStore"
+
+// 하드코딩되어 있던 data.user 영역은 삭제했습니다.
 const data = {
-    user: {
-        name: "Charles Lucvs",
-        email: "lucvs@apexf1.com",
-        avatar: "/avatars/quokka.jpg",
-    },
     logo: {
         name: "Apex F1",
         url: "/dashboard",
         icon: IconBorderCornerPill,
     },
-    // AI Agent 전용 메뉴 데이터 추가
     aiAgent: [
         {
             title: "Apex Assistant",
@@ -31,76 +29,51 @@ const data = {
         },
     ],
     navMain: [
-        {
-            title: "Schedules",
-            url: "/dashboard/schedules",
-            icon: IconCalendarEvent,
-        },
-        {
-            title: "Results",
-            url: "/dashboard/results",
-            icon: Timer,
-        },
-        {
-            title: "Teams",
-            url: "/dashboard/teams",
-            icon: Shell,
-        },
-        {
-            title: "Drivers",
-            url: "/dashboard/drivers",
-            icon: IconHelmet,
-        },
-        {
-            title: "Cars",
-            url: "/dashboard/cars",
-            icon: IconCar4wd,
-        },
-        {
-            title: "Ranks",
-            url: "/dashboard/ranks",
-            icon: Trophy,
-        },
-        {
-            title: "Circuits",
-            url: "/dashboard/circuits",
-            icon: LineSquiggle,
-        },
+        { title: "Schedules", url: "/dashboard/schedules", icon: IconCalendarEvent },
+        { title: "Results", url: "/dashboard/results", icon: Timer },
+        { title: "Teams", url: "/dashboard/teams", icon: Shell },
+        { title: "Drivers", url: "/dashboard/drivers", icon: IconHelmet },
+        { title: "Cars", url: "/dashboard/cars", icon: IconCar4wd },
+        { title: "Ranks", url: "/dashboard/ranks", icon: Trophy },
+        { title: "Circuits", url: "/dashboard/circuits", icon: LineSquiggle },
     ],
     projects: [
-        {
-            name: "Board",
-            url: "#",
-            icon: ClipboardList,
-        },
-        {
-            name: "Sales & Marketing",
-            url: "#",
-            icon: PieChart,
-        },
-        {
-            name: "Travel",
-            url: "#",
-            icon: Map,
-        },
+        { name: "Board", url: "#", icon: ClipboardList },
+        { name: "Sales & Marketing", url: "#", icon: PieChart },
+        { name: "Travel", url: "#", icon: Map },
     ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+    // Zustand 스토어에서 상태와 함수 가져오기
+    const { user, isLoading, fetchUser } = useUserStore();
+
+    // 컴포넌트 마운트 시 API 호출
+    useEffect(() => {
+        fetchUser();
+    }, [fetchUser]);
+
+    // 로딩 중이거나 미로그인 상태일 때 NavUser 컴포넌트에 넘겨줄 Fallback 데이터
+    const displayUser = user || {
+        id: 0,
+        name: isLoading ? "Loading..." : "Guest",
+        email: isLoading ? "Please wait" : "Please sign in",
+        avatar: "/avatars/default.jpg",
+    };
+
     return (
         <Sidebar collapsible="icon" {...props}>
             <SidebarHeader>
                 <ServiceLogo logo={data.logo} />
             </SidebarHeader>
             <SidebarContent>
-                {/* AI Agent 그룹을 최상단에 추가 */}
                 <NavMain label="AI Agent" items={data.aiAgent} />
-                {/* 기존 Dataground 그룹 */}
                 <NavMain label="Dataground" items={data.navMain} />
                 <NavProjects projects={data.projects} />
             </SidebarContent>
             <SidebarFooter>
-                <NavUser user={data.user} />
+                {/* 스토어에서 가져온 유저 정보(또는 Fallback)를 주입합니다. */}
+                <NavUser user={displayUser} />
             </SidebarFooter>
             <SidebarRail />
         </Sidebar>
