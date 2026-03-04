@@ -53,7 +53,7 @@ export function LoginForm({
             setErrorMsg("");
 
             // 1. 백엔드 로그인 API 호출
-            const response = await api.post("/v1/auth/login", {
+            const response = await api.post("/auth/login", {
                 email: formData.email,
                 password: formData.password,
             });
