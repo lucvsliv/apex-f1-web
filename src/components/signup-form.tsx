@@ -89,7 +89,7 @@ export function SignupForm({
 
         try {
             setIsLoading(true);
-            await api.post("/v1/auth/signup", {
+            await api.post("/auth/signup", {
                 email: formData.email,
                 nickname: formData.nickname,
                 password: formData.password,
