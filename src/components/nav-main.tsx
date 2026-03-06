@@ -20,10 +20,10 @@ export function NavMain({
 
     return (
         <SidebarGroup>
-            <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">
+            <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden text-stone-400">
                 {label}
             </SidebarGroupLabel>
-            <SidebarMenu>
+            <SidebarMenu className={"text-stone-600"}>
                 {items.map((item) => (
                     <SidebarMenuItem key={item.title}>
                         <SidebarMenuButton
