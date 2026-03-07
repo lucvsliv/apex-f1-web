@@ -120,7 +120,7 @@ export default function AgentChat() {
 
                         {/* 중앙 프롬프트 입력창 */}
                         <div className="w-full relative group">
-                            <div className="relative flex flex-col w-full rounded-3xl border border-gray-200 bg-white shadow-sm focus-within:ring-1 focus-within:ring-gray-300 focus-within:shadow-md transition-all overflow-hidden p-2 dark:bg-gray-950 dark:border-gray-800">
+                            <div className="relative flex flex-col w-full rounded-3xl border border-stone-200 bg-white focus-within:ring-1 focus-within:ring-stone-300 focus-within:shadow-md transition-all overflow-hidden p-2 dark:bg-gray-950 dark:border-gray-800">
                                 <Textarea
                                     ref={textareaRef}
                                     placeholder="예: 2024년 페라리 팀의 레이스 결과를 분석해줘"
@@ -133,7 +133,7 @@ export default function AgentChat() {
                                     <div className="text-xs text-muted-foreground px-2 flex items-center gap-1">
                                         <Sparkles className="w-3 h-3" /> Apex Assistant
                                     </div>
-                                    <Button size="icon" className="rounded-full w-10 h-10" onClick={handleSend} disabled={!input.trim()}>
+                                    <Button size="icon" className="rounded-full w-10 h-10 bg-stone-700" onClick={handleSend} disabled={!input.trim()}>
                                         <Send className="w-4 h-4" />
                                     </Button>
                                 </div>
@@ -142,13 +142,13 @@ export default function AgentChat() {
 
                         {/* 추천 질문 칩 */}
                         <div className="flex flex-wrap justify-start gap-2">
-                            <Button variant="outline" className="rounded-full bg-gray-100 border-gray-100 text-sm text-muted-foreground" onClick={() => handleSuggestionClick("최근 그랑프리 우승자는 누구야?")}>
+                            <Button variant="outline" className="rounded-full bg-stone-100 border-stone-100 text-sm text-muted-foreground" onClick={() => handleSuggestionClick("최근 그랑프리 우승자는 누구야?")}>
                                 <Trophy className="w-4 h-4 mr-2" /> 최근 우승자
                             </Button>
-                            <Button variant="outline" className="rounded-full bg-gray-100 border-gray-100 text-sm text-muted-foreground" onClick={() => handleSuggestionClick("막스 베르스타펜의 시즌 기록을 보여줘")}>
+                            <Button variant="outline" className="rounded-full bg-stone-100 border-stone-100 text-sm text-muted-foreground" onClick={() => handleSuggestionClick("막스 베르스타펜의 시즌 기록을 보여줘")}>
                                 <Car className="w-4 h-4 mr-2" /> 드라이버 기록
                             </Button>
-                            <Button variant="outline" className="rounded-full bg-gray-100 border-gray-100 text-sm text-muted-foreground" onClick={() => handleSuggestionClick("다음 서킷 일정과 특징은 뭐야?")}>
+                            <Button variant="outline" className="rounded-full bg-stone-100 border-stone-100 text-sm text-muted-foreground" onClick={() => handleSuggestionClick("다음 서킷 일정과 특징은 뭐야?")}>
                                 <MapPin className="w-4 h-4 mr-2" /> 다음 서킷 정보
                             </Button>
                         </div>

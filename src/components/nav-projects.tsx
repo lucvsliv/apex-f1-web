@@ -24,8 +24,10 @@ export function NavProjects({
 }) {
     return (
         <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-            <SidebarGroupLabel>Playground</SidebarGroupLabel>
-            <SidebarMenu>
+            <SidebarGroupLabel className={"text-stone-400"}>
+                Playground
+            </SidebarGroupLabel>
+            <SidebarMenu className={"text-stone-600"}>
                 {projects.map((item) => (
                     <SidebarMenuItem key={item.name}>
                         <SidebarMenuButton asChild>

@@ -72,7 +72,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarContent>
             <SidebarFooter>
                 {/* 스토어에서 가져온 유저 정보(또는 Fallback)를 주입합니다. */}
-                <NavUser user={displayUser} />
+                <NavUser user={displayUser}/>
             </SidebarFooter>
             <SidebarRail />
         </Sidebar>

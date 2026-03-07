@@ -4,9 +4,11 @@ import api from '@/lib/api/client'; // APEX-35에서 만든 Axios 인스턴스
 // 1. 유저 정보 타입 정의 (백엔드 응답 구조에 맞게 수정 가능)
 export interface User {
     id: number;
+    provider: string;
     email: string;
     nickname: string;
     profileImageUrl?: string;
+    role: string
 }
 
 // 2. 스토어 상태 및 액션(함수) 정의
