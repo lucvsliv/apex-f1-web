@@ -138,11 +138,18 @@ export function NavUser({
                                     Account
                                 </DropdownMenuItem>
 
-                                {/* 💡 Billing 대신 Membership으로 교체하고 상태 연결 */}
+                                {/* 💡 Membership 메뉴: ROOKIE 등급 처리 추가 */}
                                 <DropdownMenuItem
-                                    onSelect={() => !isGuest && setIsMembershipOpen(true)}
-                                    className={!isGuest ? "cursor-pointer" : ""}
-                                    disabled={isGuest}
+                                    onSelect={() => {
+                                        // 💡 비로그인이거나, 로그인했지만 등급이 ROOKIE(무료)인 경우
+                                        if (isGuest || fullUser?.tier === "ROOKIE") {
+                                            router.push("/membership")
+                                        } else {
+                                            // 유료 구독자(PADDOCK, GARAGE, PITWALL)만 모달 띄우기
+                                            setIsMembershipOpen(true)
+                                        }
+                                    }}
+                                    className="cursor-pointer"
                                 >
                                     <IconCarambola className="mr-2 size-4" />
                                     Membership
