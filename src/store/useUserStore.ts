@@ -8,7 +8,8 @@ export interface User {
     email: string;
     nickname: string;
     profileImageUrl?: string;
-    role: string
+    role: string;
+    tier: string
 }
 
 // 2. 스토어 상태 및 액션(함수) 정의
