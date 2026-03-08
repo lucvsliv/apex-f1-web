@@ -5,12 +5,10 @@ import {
     IconCreditCard,
     IconDotsVertical,
     IconLogout,
-    IconLogin, // 💡 로그인 아이콘 추가
+    IconLogin,
     IconNotification,
     IconUserCircle,
-    IconMail,
-    IconShieldCheck,
-    IconKey
+    IconCarambola,
 } from "@tabler/icons-react"
 
 import { useRouter } from "next/navigation"
@@ -56,10 +54,11 @@ export function NavUser({
     const { isMobile } = useSidebar()
     const router = useRouter()
 
+    // 💡 두 개의 모달 상태를 각각 관리합니다.
     const [isAccountOpen, setIsAccountOpen] = useState(false)
-    const { user: fullUser, clearUser } = useUserStore()
+    const [isMembershipOpen, setIsMembershipOpen] = useState(false)
 
-    // 💡 Guest 여부를 확인하는 변수 추가
+    const { user: fullUser, clearUser } = useUserStore()
     const isGuest = user.nickname === "Guest"
 
     const handleLogout = () => {
@@ -72,6 +71,18 @@ export function NavUser({
     const handleLogin = () => {
         router.push("/login")
     }
+
+    // 💡 멤버십 등급에 따른 UI 텍스트 매핑 함수
+    const getTierDetails = (tier?: string) => {
+        switch (tier) {
+            case "PADDOCK": return { name: "PADDOCK", limit: "일일 50회", color: "text-blue-600 font-semibold" }
+            case "GARAGE": return { name: "GARAGE", limit: "일일 200회", color: "text-blue-700 font-bold" }
+            case "PITWALL": return { name: "PITWALL", limit: "무제한", color: "text-stone-900 font-extrabold" }
+            default: return { name: "ROOKIE (무료)", limit: "일일 5회", color: "text-stone-500 font-medium" }
+        }
+    }
+
+    const currentTier = getTierDetails(fullUser?.tier)
 
     return (
         <>
@@ -118,7 +129,6 @@ export function NavUser({
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuGroup>
-                                {/* 💡 isGuest가 true면 disabled 속성이 켜져서 클릭 불가 & 흐리게 처리됨 */}
                                 <DropdownMenuItem
                                     onSelect={() => !isGuest && setIsAccountOpen(true)}
                                     className={!isGuest ? "cursor-pointer" : ""}
@@ -127,10 +137,17 @@ export function NavUser({
                                     <IconUserCircle className="mr-2 size-4" />
                                     Account
                                 </DropdownMenuItem>
-                                <DropdownMenuItem disabled={isGuest} className={!isGuest ? "cursor-pointer" : ""}>
-                                    <IconCreditCard className="mr-2 size-4" />
-                                    Billing
+
+                                {/* 💡 Billing 대신 Membership으로 교체하고 상태 연결 */}
+                                <DropdownMenuItem
+                                    onSelect={() => !isGuest && setIsMembershipOpen(true)}
+                                    className={!isGuest ? "cursor-pointer" : ""}
+                                    disabled={isGuest}
+                                >
+                                    <IconCarambola className="mr-2 size-4" />
+                                    Membership
                                 </DropdownMenuItem>
+
                                 <DropdownMenuItem disabled={isGuest} className={!isGuest ? "cursor-pointer" : ""}>
                                     <IconNotification className="mr-2 size-4" />
                                     Notifications
@@ -138,14 +155,13 @@ export function NavUser({
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
 
-                            {/* 💡 Guest 여부에 따라 로그인/로그아웃 버튼 분기 처리 */}
                             {isGuest ? (
-                                <DropdownMenuItem onClick={handleLogin} className="cursor-pointer">
+                                <DropdownMenuItem onClick={handleLogin} className="cursor-pointer text-blue-600 focus:text-blue-700 focus:bg-blue-50">
                                     <IconLogin className="mr-2 size-4" />
                                     Log in
                                 </DropdownMenuItem>
                             ) : (
-                                <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+                                <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600 focus:text-red-700 focus:bg-red-50">
                                     <IconLogout className="mr-2 size-4" />
                                     Log out
                                 </DropdownMenuItem>
@@ -155,18 +171,19 @@ export function NavUser({
                 </SidebarMenuItem>
             </SidebarMenu>
 
-            {/* Account 모달 (Dialog) */}
+            {/* Account 모달 */}
             <Dialog open={isAccountOpen} onOpenChange={setIsAccountOpen}>
-                <DialogContent className="border-stone-300 sm:max-w-sm">
+                <DialogContent
+                    className="border-stone-300 sm:max-w-sm"
+                    onOpenAutoFocus={(e) => e.preventDefault()}
+                >
                     <DialogHeader>
                         <DialogTitle>My Profile</DialogTitle>
                         <DialogDescription>
                             내 계정 정보를 확인하고 관리할 수 있습니다.
                         </DialogDescription>
                     </DialogHeader>
-
                     <Separator />
-
                     <FieldGroup>
                         <Field>
                             <FieldLabel>Profile Image</FieldLabel>
@@ -178,35 +195,60 @@ export function NavUser({
                                 />
                             </div>
                         </Field>
-
                         <Field>
                             <Label htmlFor="nickname">Nickname</Label>
-                            <Input
-                                id="nickname"
-                                name="nickname"
-                                defaultValue={fullUser?.nickname || ""}
-                            />
+                            <Input id="nickname" name="nickname" defaultValue={fullUser?.nickname || ""} />
                         </Field>
-
                         <Field>
                             <Label htmlFor="email">Email</Label>
-                            <Input
-                                id="email"
-                                name="email"
-                                defaultValue={fullUser?.email || ""}
-                                readOnly
-                                className="bg-stone-50 text-stone-500 focus-visible:ring-0 pointer-events-none"
-                            />
+                            <Input id="email" name="email" defaultValue={fullUser?.email || ""} readOnly className="bg-stone-50 text-stone-500 focus-visible:ring-0 pointer-events-none" />
+                        </Field>
+                        <Field>
+                            <Label htmlFor="provider">Account Provider</Label>
+                            <Input id="provider" name="provider" defaultValue={fullUser?.provider === "LOCAL" ? "Email Account" : "Kakao Account"} readOnly className="bg-stone-50 text-stone-500 focus-visible:ring-0 pointer-events-none" />
+                        </Field>
+                    </FieldGroup>
+                    <Separator />
+                    <DialogFooter>
+                        <DialogClose asChild className="border-stone-200 cursor-pointer">
+                            <Button variant="outline">Cancel</Button>
+                        </DialogClose>
+                        <Button type="button" onClick={() => alert("정보 수정 기능은 준비 중입니다.")} className="cursor-pointer">
+                            Save changes
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Membership 모달 */}
+            <Dialog open={isMembershipOpen} onOpenChange={setIsMembershipOpen}>
+                <DialogContent
+                    className="border-stone-300 sm:max-w-sm"
+                    onOpenAutoFocus={(e) => e.preventDefault()} // 💡 여기도 추가하세요!
+                >
+                    <DialogHeader>
+                        <DialogTitle>My Membership</DialogTitle>
+                        <DialogDescription>
+                            현재 구독 중인 플랜과 혜택을 확인하세요.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <Separator />
+
+                    <FieldGroup>
+                        <Field>
+                            <Label>Current Plan</Label>
+                            <div className={`text-xl ${currentTier.color}`}>
+                                {currentTier.name}
+                            </div>
                         </Field>
 
                         <Field>
-                            <Label htmlFor="provider">Account Provider</Label>
+                            <Label>AI Agent Usage Limit</Label>
                             <Input
-                                id="provider"
-                                name="provider"
-                                defaultValue={fullUser?.provider === "LOCAL" ? "Email Account" : "Kakao Account"}
                                 readOnly
-                                className="bg-stone-50 text-stone-500 focus-visible:ring-0 pointer-events-none"
+                                value={currentTier.limit}
+                                className="bg-stone-50 text-stone-700 font-medium focus-visible:ring-0 pointer-events-none"
                             />
                         </Field>
                     </FieldGroup>
@@ -215,14 +257,18 @@ export function NavUser({
 
                     <DialogFooter>
                         <DialogClose asChild className="border-stone-200 cursor-pointer">
-                            <Button variant="outline">Cancel</Button>
+                            <Button variant="outline">Close</Button>
                         </DialogClose>
+                        {/* 💡 업그레이드 페이지로 라우팅하는 버튼 */}
                         <Button
                             type="button"
-                            onClick={() => alert("정보 수정 기능은 준비 중입니다.")}
-                            className={"cursor-pointer"}
+                            onClick={() => {
+                                setIsMembershipOpen(false)
+                                router.push("/membership")
+                            }}
+                            className="cursor-pointer"
                         >
-                            Save changes
+                            Change Plan
                         </Button>
                     </DialogFooter>
                 </DialogContent>
