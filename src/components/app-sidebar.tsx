@@ -54,10 +54,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     }, [fetchUser]);
 
     // 로딩 중이거나 미로그인 상태일 때 NavUser 컴포넌트에 넘겨줄 Fallback 데이터
-    const displayUser = user || {
-        nickname: isLoading ? "Loading..." : "Guest",
-        email: isLoading ? "Please wait" : "Please sign in",
-        profileImageUrl: "/avatars/default.svg", // 기본 아바타 경로 확인
+    const displayUser = {
+        nickname: user?.nickname ?? (isLoading ? "Loading..." : "Guest"),
+        email: user?.email ?? (isLoading ? "Please wait" : "Please sign in"),
+        profileImageUrl: user?.profileImageUrl ?? "/avatars/default.svg",
     };
 
     return (
