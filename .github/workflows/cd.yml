@@ -24,6 +24,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script_stop: true
+          command_timeout: 30m
           envs: ENV_FILE_CONTENT
           script: |
             echo "[*] Apex F1 Web 배포를 시작합니다..."
