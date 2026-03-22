@@ -6,8 +6,10 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbS
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Item, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
+import { Spinner } from "@/components/ui/spinner";
 import api from "@/lib/api/client";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 
 type Message = {
     id: string;
@@ -18,15 +20,31 @@ type Message = {
 export default function AgentChat() {
     const [messages, setMessages] = React.useState<Message[]>([]);
     const [input, setInput] = React.useState("");
+    const [nickname, setNickname] = React.useState("Guest");
+    const [isLoading, setIsLoading] = React.useState(false);
     const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
-    // Axios 사용
+    // 💡 컴포넌트가 마운트될 때 사용자 정보를 가져와서 닉네임 세팅
+    React.useEffect(() => {
+        const fetchUserInfo = async () => {
+            try {
+                // (주의: 백엔드의 실제 유저 정보 조회 API 엔드포인트로 수정해주세요)
+                const response = await api.get("/users/me");
+                if (response.data && response.data.nickname) {
+                    setNickname(response.data.nickname);
+                }
+            } catch (error) {
+                console.error("사용자 정보를 불러오는데 실패했습니다.", error);
+            }
+        };
+        fetchUserInfo();
+    }, []);
+
     const handleSend = async () => {
         if (!input.trim()) return;
 
         const userMessage = input;
 
-        // 1. 유저 메시지를 화면에 먼저 렌더링 (낙관적 업데이트)
         const newMessage: Message = {
             id: Date.now().toString(),
             role: "user",
@@ -34,25 +52,22 @@ export default function AgentChat() {
         };
 
         setMessages((prev) => [...prev, newMessage]);
-        setInput(""); // 전송 후 입력창 비우기
+        setInput("");
+        setIsLoading(true);
 
         try {
-            // 2. Axios 인스턴스로 API 통신 (토큰은 Interceptor가 알아서 헤더에 주입)
             const response = await api.post("/agent/chat", { message: userMessage });
 
-            // 3. 백엔드 응답을 화면에 추가
-            // (주의: 백엔드의 실제 응답 필드명에 따라 response.data.response 부분을 수정해야 할 수 있습니다)
             setMessages((prev) => [
                 ...prev,
                 {
                     id: (Date.now() + 1).toString(),
                     role: "assistant",
-                    content: response.data.response || "응답을 받았습니다. (백엔드 구조에 맞게 매핑 필요)",
+                    content: response.data.response || "응답을 받았습니다.",
                 }
             ]);
         } catch (error) {
             console.error("채팅 전송 실패:", error);
-            // 401/403은 Interceptor가 처리하므로, 여기서는 500 에러나 네트워크 연결 에러 등을 처리합니다.
             setMessages((prev) => [
                 ...prev,
                 {
@@ -61,6 +76,8 @@ export default function AgentChat() {
                     content: "서버와 연결할 수 없거나 요청 처리 중 오류가 발생했습니다.",
                 }
             ]);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -79,7 +96,6 @@ export default function AgentChat() {
 
     return (
         <div className="flex flex-col h-full">
-            {/* Breadcrumb: 중앙 컨테이너 밖으로 분리하여 다른 페이지와 위치 통일 */}
             <Breadcrumb className="mx-7 mt-6 mb-2">
                 <BreadcrumbList>
                     <BreadcrumbItem>
@@ -103,22 +119,19 @@ export default function AgentChat() {
                 </BreadcrumbList>
             </Breadcrumb>
 
-            {/* 메인 콘텐츠 영역 */}
             <div className="flex flex-col flex-1 w-full max-w-5xl mx-auto p-4 md:p-6 md:pt-2">
                 {messages.length === 0 ? (
-                    // 1. 초기 상태: 인사말 좌측 정렬 및 중앙 입력창
                     <div className="flex flex-1 flex-col justify-center w-full max-w-3xl mx-auto gap-8 px-4 pb-20">
-                        {/* 인사말 좌측 정렬 적용 */}
                         <div className="text-left w-full space-y-4">
                             <h1 className="text-4xl md:text-4xl font-semibold bg-gradient-to-r from-gray-600 to-red-600 bg-clip-text text-transparent dark:from-gray-100 dark:to-gray-400">
-                                안녕하세요, Charles Lucvs님
+                                {/* 하드코딩된 이름 대신 동적 닉네임 사용 */}
+                                안녕하세요, {nickname}님
                             </h1>
                             <p className="text-xl md:text-xl text-muted-foreground font-medium">
                                 오늘 어떤 F1 데이터가 궁금하신가요?
                             </p>
                         </div>
 
-                        {/* 중앙 프롬프트 입력창 */}
                         <div className="w-full relative group">
                             <div className="relative flex flex-col w-full rounded-3xl border border-stone-200 bg-white focus-within:ring-1 focus-within:ring-stone-300 focus-within:shadow-md transition-all overflow-hidden p-2 dark:bg-gray-950 dark:border-gray-800">
                                 <Textarea
@@ -133,14 +146,13 @@ export default function AgentChat() {
                                     <div className="text-xs text-muted-foreground px-2 flex items-center gap-1">
                                         <Sparkles className="w-3 h-3" /> Apex Assistant
                                     </div>
-                                    <Button size="icon" className="rounded-full w-10 h-10 bg-stone-700" onClick={handleSend} disabled={!input.trim()}>
+                                    <Button size="icon" className="rounded-full w-10 h-10 bg-stone-700" onClick={handleSend} disabled={!input.trim() || isLoading}>
                                         <Send className="w-4 h-4" />
                                     </Button>
                                 </div>
                             </div>
                         </div>
 
-                        {/* 추천 질문 칩 */}
                         <div className="flex flex-wrap justify-start gap-2">
                             <Button variant="outline" className="rounded-full bg-stone-100 border-stone-100 text-sm text-muted-foreground" onClick={() => handleSuggestionClick("최근 그랑프리 우승자는 누구야?")}>
                                 <Trophy className="w-4 h-4 mr-2" /> 최근 우승자
@@ -154,7 +166,6 @@ export default function AgentChat() {
                         </div>
                     </div>
                 ) : (
-                    // 2. 대화 진행 상태: 일반적인 채팅 뷰
                     <div className="flex flex-col flex-1 w-full max-w-3xl mx-auto overflow-hidden">
                         <div className="flex-1 overflow-y-auto p-4 space-y-6 scroll-smooth">
                             {messages.map((msg) => (
@@ -165,21 +176,45 @@ export default function AgentChat() {
                                         ) : (
                                             <>
                                                 <AvatarImage src="/avatars/quokka.jpg" />
-                                                <AvatarFallback className="bg-secondary text-secondary-foreground">CL</AvatarFallback>
+                                                <AvatarFallback className="bg-secondary text-secondary-foreground">
+                                                    {/* 이니셜도 닉네임 기반으로 동적 처리 가능 (지금은 앞 2글자) */}
+                                                    {nickname.substring(0, 2).toUpperCase()}
+                                                </AvatarFallback>
                                             </>
                                         )}
                                     </Avatar>
                                     <div className={`flex-1 space-y-2 ${msg.role === "user" ? "text-right" : "text-left"}`}>
-                                        <p className="text-sm font-semibold">{msg.role === "assistant" ? "Apex Assistant" : "Charles Lucvs"}</p>
+                                        <p className="text-sm font-semibold">{msg.role === "assistant" ? "Apex Assistant" : nickname}</p>
                                         <div className="text-base leading-relaxed whitespace-pre-wrap text-foreground/90">
                                             {msg.content}
                                         </div>
                                     </div>
                                 </div>
                             ))}
+
+                            {/* 로딩 중일 때 표시되는 Spinner UI */}
+                            {isLoading && (
+                                <div className="flex items-start gap-4">
+                                    <Avatar className="w-10 h-10 mt-1 border-gray-0 shrink-0">
+                                        <AvatarFallback className="bg-primary/10 text-primary"><Sparkles size={16} /></AvatarFallback>
+                                    </Avatar>
+                                    <div className="flex-1 space-y-2 text-left">
+                                        <p className="text-sm font-semibold">Apex Assistant</p>
+                                        <div className="flex w-full max-w-xs flex-col gap-4 [--radius:1rem]">
+                                            <Item variant="muted">
+                                                <ItemMedia>
+                                                    <Spinner />
+                                                </ItemMedia>
+                                                <ItemContent>
+                                                    <ItemTitle className="line-clamp-1">F1 데이터를 분석하고 있습니다...</ItemTitle>
+                                                </ItemContent>
+                                            </Item>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
-                        {/* 하단 고정 입력창 */}
                         <div className="p-4 bg-background mt-auto">
                             <div className="relative flex flex-col w-full rounded-2xl border border-gray-200 bg-white shadow-sm focus-within:ring-1 focus-within:ring-gray-300 transition-all overflow-hidden p-1 dark:bg-gray-950 dark:border-gray-800">
                                 <Textarea
@@ -189,9 +224,10 @@ export default function AgentChat() {
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     onKeyDown={handleKeyDown}
+                                    disabled={isLoading}
                                 />
                                 <div className="flex justify-end p-1">
-                                    <Button size="icon" className="rounded-full w-8 h-8" onClick={handleSend} disabled={!input.trim()}>
+                                    <Button size="icon" className="rounded-full w-8 h-8" onClick={handleSend} disabled={!input.trim() || isLoading}>
                                         <Send className="w-3.5 h-3.5" />
                                     </Button>
                                 </div>

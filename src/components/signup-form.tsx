@@ -138,7 +138,32 @@ export function SignupForm({
     };
 
     const handleKakaoLogin = () => {
-        // ... (카카오 로그인 로직 유지)
+        if (!window.Kakao || !window.Kakao.isInitialized()) {
+            alert("카카오 SDK가 아직 로드되지 않았습니다. 잠시 후 다시 시도해주세요.");
+            return;
+        }
+
+        window.Kakao.Auth.login({
+            success: async function (authObj: any) {
+                try {
+                    const response = await api.post("/auth/social/login", {
+                        provider: "KAKAO",
+                        accessToken: authObj.access_token,
+                    });
+
+                    localStorage.setItem("apex_access_token", response.data.accessToken);
+                    router.push("/dashboard/agent/chat");
+
+                } catch (error) {
+                    console.error("로그인 연동 에러:", error);
+                    alert("로그인 처리 중 문제가 발생했습니다.");
+                }
+            },
+            fail: function (err: any) {
+                console.error("카카오 로그인 실패:", err);
+                alert("카카오 로그인에 실패했습니다.");
+            },
+        });
     };
 
     return (
@@ -253,6 +278,9 @@ export function SignupForm({
                                                 onClick={() => handleAvatarSelect(presetAvatar)}
                                                 className={cn(
                                                     "w-16 h-16 rounded-full border-2 overflow-hidden transition-all hover:scale-105",
+                                                    // 💡 1. 여기에 선택 안 되었을 때 흐려지는 효과(opacity)를 추가합니다!
+                                                    formData.profileImageUrl !== presetAvatar && "opacity-40 grayscale-[30%] hover:opacity-100",
+                                                    // (기존 선택 스타일 유지)
                                                     formData.profileImageUrl === presetAvatar
                                                         ? "border-stone-400 ring-2 ring-stone-200"
                                                         : "border-stone-200 hover:border-stone-300"
@@ -276,6 +304,7 @@ export function SignupForm({
                                                     onClick={() => handleAvatarSelect(randomAvatar)}
                                                     className={cn(
                                                         "w-16 h-16 rounded-full border-2 overflow-hidden transition-all hover:scale-105 bg-white",
+                                                        formData.profileImageUrl !== randomAvatar && "opacity-40 grayscale-[30%] hover:opacity-100",
                                                         formData.profileImageUrl === randomAvatar
                                                             ? "border-stone-400 ring-2 ring-stone-200"
                                                             : "border-stone-200 hover:border-stone-300"
@@ -289,7 +318,7 @@ export function SignupForm({
                                                         e.stopPropagation();
                                                         generateRandomAvatar();
                                                     }}
-                                                    className="absolute -bottom-1 -right-1 bg-white border border-stone-200 rounded-full p-1.5 shadow-sm hover:bg-stone-50 text-stone-600 transition-colors z-10"
+                                                    className="absolute -bottom-1 -right-1 bg-white border border-stone-200 rounded-full p-1.5 shadow-sm hover:bg-stone-50 text-stone-600 transition-colors z-20 opacity-100"
                                                     title="다른 랜덤 이미지 생성"
                                                 >
                                                     <Dices size={14} />
@@ -314,6 +343,8 @@ export function SignupForm({
                                                         !uploadAvatar
                                                             ? "border-dashed border-stone-300 bg-stone-50 cursor-default"
                                                             : "hover:scale-105",
+                                                        uploadAvatar && formData.profileImageUrl !== uploadAvatar && "opacity-40 grayscale-[30%] hover:opacity-100",
+                                                        // (기존 선택 스타일 유지)
                                                         uploadAvatar && formData.profileImageUrl === uploadAvatar
                                                             ? "border-stone-400 ring-2 ring-stone-200"
                                                             : (uploadAvatar ? "border-stone-200 hover:border-stone-300" : "")
@@ -335,7 +366,7 @@ export function SignupForm({
                                                 <button
                                                     type="button"
                                                     onClick={() => fileInputRef.current?.click()}
-                                                    className="absolute -bottom-1 -right-1 bg-white border border-stone-200 rounded-full p-1.5 shadow-sm hover:bg-stone-50 text-stone-500 transition-colors z-10"
+                                                    className="absolute -bottom-1 -right-1 bg-white border border-stone-200 rounded-full p-1.5 shadow-sm hover:bg-stone-50 text-stone-500 transition-colors z-20 opacity-100"
                                                     title="이미지 업로드"
                                                 >
                                                     <Upload size={14} />
