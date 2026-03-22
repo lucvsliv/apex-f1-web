@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useUserStore } from "@/store/useUserStore";
+import api from "@/lib/api/client";
 
 function SuccessContent() {
     const searchParams = useSearchParams();
@@ -25,24 +26,22 @@ function SuccessContent() {
         const confirmSubscription = async () => {
             try {
                 const token = localStorage.getItem("apex_access_token");
-                const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-
-                const response = await fetch(`${apiUrl}/api/v1/subscriptions`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`
+                await api.post("/api/v1/subscriptions",
+                    {
+                        authKey,
+                        customerKey,
+                        targetTier
                     },
-                    body: JSON.stringify({ authKey, customerKey, targetTier })
-                });
+                    {
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    }
+                );
 
-                if (response.ok) {
-                    setStatus("success");
-                    // 💡 결제 승인 완료 후 즉시 유저 정보를 새로고침하여 등급 갱신!
-                    fetchUser();
-                } else {
-                    setStatus("error");
-                }
+                setStatus("success");
+                await fetchUser();
+
             } catch (error) {
                 console.error("구독 승인 에러:", error);
                 setStatus("error");

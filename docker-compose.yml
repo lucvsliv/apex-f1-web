@@ -1,9 +1,11 @@
 services:
-  frontend:
+  web:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://apex-f1.site:8080/api/v1
+    container_name: apex-f1-web
     ports:
-      - "3000:3000"
-    env_file:
-      - .env
+      - "80:3000"
+    restart: unless-stopped
