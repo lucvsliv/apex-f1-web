@@ -1,0 +1,44 @@
+name: Apex F1 Web CD Pipeline
+
+on:
+  workflow_run:
+    workflows: ["Apex F1 Web CI Pipeline"]
+    types:
+      - completed
+    branches:
+      - main
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    name: Deploy to EC2
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Deploy to AWS EC2
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          ENV_FILE_CONTENT: ${{ secrets.ENV_FILE }}
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script_stop: true
+          envs: ENV_FILE_CONTENT
+          script: |
+            echo "[*] Apex F1 Web 배포를 시작합니다..."
+            
+            cd ~/apex-f1-web
+            
+            git fetch --all
+            git reset --hard origin/main
+            
+            echo "[*] .env 파일 생성 중..."
+            echo "$ENV_FILE_CONTENT" > .env
+            
+            echo "[*] 도커 컨테이너를 캐시 없이 새로 빌드하고 실행합니다..."
+            docker compose build --no-cache
+            docker compose up -d
+            
+            docker image prune -f
+            echo "[*] 프론트엔드 자동 배포가 완료되었습니다 :)"
