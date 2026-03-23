@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, Suspense, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,23 +10,30 @@ import api from "@/lib/api/client";
 function SuccessContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const { fetchUser } = useUserStore(); // 💡 fetchUser 가져오기
+    const { fetchUser } = useUserStore();
     const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
+
+    const hasProcessed = useRef(false);
 
     useEffect(() => {
         const authKey = searchParams.get("authKey");
         const customerKey = searchParams.get("customerKey");
-        const targetTier = searchParams.get("tier");
+        const targetTier = searchParams.get("targetTier");
 
         if (!authKey || !customerKey || !targetTier) {
+            console.error("필수 파라미터 누락:", { authKey, customerKey, targetTier });
             setStatus("error");
             return;
         }
 
+        if (hasProcessed.current) return;
+        hasProcessed.current = true;
+
         const confirmSubscription = async () => {
             try {
                 const token = localStorage.getItem("apex_access_token");
-                await api.post("/api/v1/subscriptions",
+
+                await api.post("/subscriptions",
                     {
                         authKey,
                         customerKey,
@@ -40,7 +47,7 @@ function SuccessContent() {
                 );
 
                 setStatus("success");
-                await fetchUser();
+                await fetchUser(); // 멤버십 변경 후 유저 정보 최신화
 
             } catch (error) {
                 console.error("구독 승인 에러:", error);

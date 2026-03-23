@@ -14,12 +14,11 @@ import { IconBorderCornerPill, IconCar4wd, IconHelmet, IconCalendarEvent, } from
 // Zustand 스토어 임포트
 import { useUserStore } from "@/store/useUserStore"
 
-// 하드코딩되어 있던 data.user 영역은 삭제했습니다.
 const data = {
     logo: {
         name: "Apex F1",
         url: "/dashboard",
-        icon: IconBorderCornerPill,
+        icon: "/icons/logo.svg",
     },
     aiAgent: [
         {
@@ -71,7 +70,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <NavProjects projects={data.projects} />
             </SidebarContent>
             <SidebarFooter>
-                {/* 스토어에서 가져온 유저 정보(또는 Fallback)를 주입합니다. */}
                 <NavUser user={displayUser}/>
             </SidebarFooter>
             <SidebarRail />

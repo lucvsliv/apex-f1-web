@@ -7,7 +7,6 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-    useSidebar,
 } from "@/components/ui/sidebar"
 
 export function ServiceLogo({
@@ -16,14 +15,10 @@ export function ServiceLogo({
     logo: {
         name: string
         url: string
-        icon: React.ElementType
+        icon: React.ElementType | string
     }
 }) {
-    const { isMobile } = useSidebar()
-
-    if (!logo) {
-        return null
-    }
+    if (!logo) return null
 
     return (
         <SidebarMenu>
@@ -33,13 +28,27 @@ export function ServiceLogo({
                     size="lg"
                     className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
-                    <Link href={logo.url}>
-                        <div className="flex aspect-square items-center justify-center rounded-lg text-sidebar-primary-foreground shrink-0">
-                            <logo.icon className="size-8 text-red-500 stroke-3" />
+                    <Link href={logo.url} className="flex items-center gap-2">
+
+                        {/* 로고 아이콘 */}
+                        <div className="flex aspect-square items-center justify-center rounded-lg shrink-0">
+                            {typeof logo.icon === "string" ? (
+                                <img src={logo.icon} alt="logo" className="size-8" />
+                            ) : (
+                                <logo.icon className="size-8 text-red-500 stroke-3" />
+                            )}
                         </div>
-                        <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden" style={{ fontFamily: "'Formula 1', monospace" }}>
-                            <span className="truncate text-xl font-medium">{logo.name}</span>
+
+                        {/* 로고 텍스트 */}
+                        <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
+              <span
+                  className="truncate text-xl font-medium"
+                  style={{ fontFamily: "'Formula 1', monospace" }}
+              >
+                {logo.name}
+              </span>
                         </div>
+
                     </Link>
                 </SidebarMenuButton>
             </SidebarMenuItem>

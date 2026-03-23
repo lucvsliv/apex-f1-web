@@ -24,7 +24,6 @@ export default function AgentChat() {
     const [isLoading, setIsLoading] = React.useState(false);
     const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
-    // 💡 컴포넌트가 마운트될 때 사용자 정보를 가져와서 닉네임 세팅
     React.useEffect(() => {
         const fetchUserInfo = async () => {
             try {
