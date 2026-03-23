@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="120" height="120"
+     viewBox="0 0 24 24"
+     fill="none"
+     stroke="#ffffff"
+     stroke-width="2.6"
+     stroke-linecap="round"
+     stroke-linejoin="round">
+
+  <!-- Red rounded background -->
+  <rect x="1" y="1" width="22" height="22" rx="4" fill="#ff2a2a" stroke="none"/>
+
+  <!-- Curve 1 -->
+  <path d="M4.5 18.5c0 -5.5 4.5 -10.5 10.5 -10.5" />
+
+  <!-- Curve 2 (perfect symmetry) -->
+  <path d="M19.5 4.5c0 5.5 -4.5 10.5 -10.5 10.5" />
+
+</svg>

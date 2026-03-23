@@ -41,6 +41,7 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
+import Link from "next/link";
 
 export function NavUser({
                             user,
@@ -101,12 +102,13 @@ export function NavUser({
                                 <div className="grid flex-1 text-left text-sm leading-tight">
                                     <span className="truncate font-medium">{user.nickname}</span>
                                     <span className="text-muted-foreground truncate text-xs">
-                                        {user.email}
-                                    </span>
+                        {user.email}
+                    </span>
                                 </div>
                                 <IconDotsVertical className="ml-auto size-4 text-stone-700" />
                             </SidebarMenuButton>
                         </DropdownMenuTrigger>
+
                         <DropdownMenuContent
                             className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg border-r border-stone-200"
                             side={isMobile ? "bottom" : "right"}
@@ -122,15 +124,17 @@ export function NavUser({
                                     <div className="grid flex-1 text-left text-sm leading-tight">
                                         <span className="truncate font-medium">{user.nickname}</span>
                                         <span className="text-muted-foreground truncate text-xs">
-                                            {user.email}
-                                        </span>
+                            {user.email}
+                        </span>
                                     </div>
                                 </div>
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
+
                             <DropdownMenuGroup>
+                                {/* Account */}
                                 <DropdownMenuItem
-                                    onSelect={() => !isGuest && setIsAccountOpen(true)}
+                                    onSelect={() => !isGuest && router.push("/dashboard/profile")}
                                     className={!isGuest ? "cursor-pointer" : ""}
                                     disabled={isGuest}
                                 >
@@ -138,30 +142,25 @@ export function NavUser({
                                     Account
                                 </DropdownMenuItem>
 
-                                {/* 💡 Membership 메뉴: ROOKIE 등급 처리 추가 */}
+                                {/* Membership */}
                                 <DropdownMenuItem
-                                    onSelect={() => {
-                                        // 💡 비로그인이거나, 로그인했지만 등급이 ROOKIE(무료)인 경우
-                                        if (isGuest || fullUser?.tier === "ROOKIE") {
-                                            router.push("/membership")
-                                        } else {
-                                            // 유료 구독자(PADDOCK, GARAGE, PITWALL)만 모달 띄우기
-                                            setIsMembershipOpen(true)
-                                        }
-                                    }}
+                                    onSelect={() => router.push("/membership")}
                                     className="cursor-pointer"
                                 >
                                     <IconCarambola className="mr-2 size-4" />
                                     Membership
                                 </DropdownMenuItem>
 
+                                {/* Notifications는 그대로 유지 */}
                                 <DropdownMenuItem disabled={isGuest} className={!isGuest ? "cursor-pointer" : ""}>
                                     <IconNotification className="mr-2 size-4" />
                                     Notifications
                                 </DropdownMenuItem>
                             </DropdownMenuGroup>
+
                             <DropdownMenuSeparator />
 
+                            {/* 로그인/로그아웃 버튼 */}
                             {isGuest ? (
                                 <DropdownMenuItem onClick={handleLogin} className="cursor-pointer text-blue-600 focus:text-blue-700 focus:bg-blue-50">
                                     <IconLogin className="mr-2 size-4" />
@@ -177,109 +176,6 @@ export function NavUser({
                     </DropdownMenu>
                 </SidebarMenuItem>
             </SidebarMenu>
-
-            {/* Account 모달 */}
-            <Dialog open={isAccountOpen} onOpenChange={setIsAccountOpen}>
-                <DialogContent
-                    className="border-stone-300 sm:max-w-sm"
-                    onOpenAutoFocus={(e) => e.preventDefault()}
-                >
-                    <DialogHeader>
-                        <DialogTitle>My Profile</DialogTitle>
-                        <DialogDescription>
-                            내 계정 정보를 확인하고 관리할 수 있습니다.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <Separator />
-                    <FieldGroup>
-                        <Field>
-                            <FieldLabel>Profile Image</FieldLabel>
-                            <div className="flex flex-col items-start gap-2">
-                                <img
-                                    src={fullUser?.profileImageUrl || "/avatars/default.svg"}
-                                    alt="Profile"
-                                    className="w-16 h-16 rounded-full border border-stone-200 overflow-hidden transition-all object-cover"
-                                />
-                            </div>
-                        </Field>
-                        <Field>
-                            <Label htmlFor="nickname">Nickname</Label>
-                            <Input id="nickname" name="nickname" defaultValue={fullUser?.nickname || ""} />
-                        </Field>
-                        <Field>
-                            <Label htmlFor="email">Email</Label>
-                            <Input id="email" name="email" defaultValue={fullUser?.email || ""} readOnly className="bg-stone-50 text-stone-500 focus-visible:ring-0 pointer-events-none" />
-                        </Field>
-                        <Field>
-                            <Label htmlFor="provider">Account Provider</Label>
-                            <Input id="provider" name="provider" defaultValue={fullUser?.provider === "LOCAL" ? "Email Account" : "Kakao Account"} readOnly className="bg-stone-50 text-stone-500 focus-visible:ring-0 pointer-events-none" />
-                        </Field>
-                    </FieldGroup>
-                    <Separator />
-                    <DialogFooter>
-                        <DialogClose asChild className="border-stone-200 cursor-pointer">
-                            <Button variant="outline">Cancel</Button>
-                        </DialogClose>
-                        <Button type="button" onClick={() => alert("정보 수정 기능은 준비 중입니다.")} className="cursor-pointer">
-                            Save changes
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-
-            {/* Membership 모달 */}
-            <Dialog open={isMembershipOpen} onOpenChange={setIsMembershipOpen}>
-                <DialogContent
-                    className="border-stone-300 sm:max-w-sm"
-                    onOpenAutoFocus={(e) => e.preventDefault()} // 💡 여기도 추가하세요!
-                >
-                    <DialogHeader>
-                        <DialogTitle>My Membership</DialogTitle>
-                        <DialogDescription>
-                            현재 구독 중인 플랜과 혜택을 확인하세요.
-                        </DialogDescription>
-                    </DialogHeader>
-
-                    <Separator />
-
-                    <FieldGroup>
-                        <Field>
-                            <Label>Current Plan</Label>
-                            <div className={`text-xl ${currentTier.color}`}>
-                                {currentTier.name}
-                            </div>
-                        </Field>
-
-                        <Field>
-                            <Label>AI Agent Usage Limit</Label>
-                            <Input
-                                readOnly
-                                value={currentTier.limit}
-                                className="bg-stone-50 text-stone-700 font-medium focus-visible:ring-0 pointer-events-none"
-                            />
-                        </Field>
-                    </FieldGroup>
-
-                    <Separator />
-
-                    <DialogFooter>
-                        <DialogClose asChild className="border-stone-200 cursor-pointer">
-                            <Button variant="outline">Close</Button>
-                        </DialogClose>
-                        {/* 💡 업그레이드 페이지로 라우팅하는 버튼 */}
-                        <Button
-                            type="button"
-                            onClick={() => {
-                                setIsMembershipOpen(false)
-                                router.push("/membership")
-                            }}
-                            className="cursor-pointer"
-                        >
-                            Change Plan
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
         </>
     )
 }
