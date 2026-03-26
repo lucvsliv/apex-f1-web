@@ -3,6 +3,18 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
     output: "standalone",
 
+    // F1 공식 이미지 서버 도메인 허용 추가
+    images: {
+        remotePatterns: [
+            {
+                protocol: "https",
+                hostname: "media.formula1.com",
+                port: "",
+                pathname: "/**",
+            },
+        ],
+    },
+
     async redirects() {
         return [
             {

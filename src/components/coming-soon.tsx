@@ -32,20 +32,22 @@ export default function ComingSoon() {
             </div>
 
             {/* Right Section */}
-            <div className="relative flex flex-1 flex-col items-center bg-stone-50 p-8 lg:p-12">
+            <div className="relative flex flex-1 flex-col items-center bg-stone-50">
 
-                <div className="flex flex-col items-center space-y-16 text-center mt-24 lg:mt-40 w-full">
+                <div className="flex flex-col items-center space-y-10 text-center mt-15 lg:mt-15 w-full">
                     <div className="relative z-10 flex flex-col items-center space-y-4 text-center">
+                        <p className="text-stone-500 lg:text-lg max-w-md mb-0 leading-relaxed">
+                            스즈카 그랑프리는 Apex F1과 함께
+                        </p>
                         <h1 className="text-4xl font-extrabold text-stone-900 tracking-tight lg:text-5xl">
                             Ready for Suzuka?
                         </h1>
-                        <p className="text-stone-500 lg:text-lg max-w-md mt-5 leading-relaxed">
-                            스즈카 그랑프리는 Apex F1과 함께
-                        </p>
                     </div>
 
                     {/* 타이머 컴포넌트 */}
-                    <Countdown />
+                    <div className="w-full max-w-[600px] overflow-hidden">
+                        <Countdown />
+                    </div>
 
                     {/* 로그인한 사용자는 안 보이게, 미로그인 사용자에게만 Go to Login 표시 */}
                     {mounted && !isLoggedIn && (

@@ -35,14 +35,6 @@ import {
     useSidebar,
 } from "@/components/ui/sidebar"
 
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Separator } from "@/components/ui/separator"
-import Link from "next/link";
-
 export function NavUser({
                             user,
                         }: {
@@ -54,10 +46,6 @@ export function NavUser({
 }) {
     const { isMobile } = useSidebar()
     const router = useRouter()
-
-    // 💡 두 개의 모달 상태를 각각 관리합니다.
-    const [isAccountOpen, setIsAccountOpen] = useState(false)
-    const [isMembershipOpen, setIsMembershipOpen] = useState(false)
 
     const { user: fullUser, clearUser } = useUserStore()
     const isGuest = user.nickname === "Guest"
@@ -73,7 +61,7 @@ export function NavUser({
         router.push("/login")
     }
 
-    // 💡 멤버십 등급에 따른 UI 텍스트 매핑 함수
+    // TODO: 멤버십 등급에 따른 옵션 정보 API 호출 필요
     const getTierDetails = (tier?: string) => {
         switch (tier) {
             case "PADDOCK": return { name: "PADDOCK", limit: "일일 50회", color: "text-blue-600 font-semibold" }

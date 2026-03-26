@@ -26,11 +26,9 @@ const calculateTimeLeft = (targetDate: Date): TimeLeft => {
 };
 
 export function Countdown() {
-    // 💡 다음 F1 경기: 2026 일본 그랑프리 (Suzuka) - 3월 29일 결승전 기준 (KST/JST 동일)
     const [targetDate] = useState(() => new Date("2026-03-29T14:00:00+09:00"));
     const [timeLeft, setTimeLeft] = useState<TimeLeft>(calculateTimeLeft(targetDate));
 
-    // 💡 Next.js SSR Hydration 불일치 에러를 막기 위한 마운트 상태
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -62,7 +60,6 @@ export function Countdown() {
     });
 
     return (
-        // 💡 전체를 감싸는 부모 div를 추가하고 왼쪽 정렬(items-start)과 가운데 배치(mx-auto)를 적용했습니다.
         <div className="flex flex-col items-center w-fit mx-auto mt-10">
             <span className="text-2xl font-semibold text-stone-400 uppercase tracking-widest mb-3 ml-1">
                 Next Grand Prix
