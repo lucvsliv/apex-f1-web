@@ -17,20 +17,28 @@ type Message = {
     content: string;
 };
 
+interface UserData {
+    nickname: string;
+    profileImageUrl?: string;
+}
+
 export default function AgentChat() {
     const [messages, setMessages] = React.useState<Message[]>([]);
     const [input, setInput] = React.useState("");
-    const [nickname, setNickname] = React.useState("Guest");
     const [isLoading, setIsLoading] = React.useState(false);
+    const [chatId, setChatId] = React.useState<string | null>(null);
+
+
+    const [user, setUser] = React.useState<UserData | null>(null);
+
     const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
     React.useEffect(() => {
         const fetchUserInfo = async () => {
             try {
-                // (주의: 백엔드의 실제 유저 정보 조회 API 엔드포인트로 수정해주세요)
                 const response = await api.get("/users/me");
-                if (response.data && response.data.nickname) {
-                    setNickname(response.data.nickname);
+                if (response.data) {
+                    setUser(response.data);
                 }
             } catch (error) {
                 console.error("사용자 정보를 불러오는데 실패했습니다.", error);
@@ -55,7 +63,14 @@ export default function AgentChat() {
         setIsLoading(true);
 
         try {
-            const response = await api.post("/agent/chat", { message: userMessage });
+            const response = await api.post("/agent/chat", {
+                message: userMessage,
+                chatId: chatId
+            });
+
+            if (response.data && response.data.chatId) {
+                setChatId(response.data.chatId);
+            }
 
             setMessages((prev) => [
                 ...prev,
@@ -93,6 +108,9 @@ export default function AgentChat() {
         textareaRef.current?.focus();
     };
 
+    const displayNickname = user?.nickname || "Guest";
+    const fallbackInitials = displayNickname.substring(0, 2).toUpperCase();
+
     return (
         <div className="flex flex-col h-full">
             <Breadcrumb className="mx-7 mt-6 mb-2">
@@ -123,8 +141,7 @@ export default function AgentChat() {
                     <div className="flex flex-1 flex-col justify-center w-full max-w-3xl mx-auto gap-8 px-4 pb-20">
                         <div className="text-left w-full space-y-4">
                             <h1 className="text-4xl md:text-4xl font-semibold bg-gradient-to-r from-gray-600 to-red-600 bg-clip-text text-transparent dark:from-gray-100 dark:to-gray-400">
-                                {/* 하드코딩된 이름 대신 동적 닉네임 사용 */}
-                                안녕하세요, {nickname}님
+                                안녕하세요, {displayNickname}님
                             </h1>
                             <p className="text-xl md:text-xl text-muted-foreground font-medium">
                                 오늘 어떤 F1 데이터가 궁금하신가요?
@@ -132,6 +149,7 @@ export default function AgentChat() {
                         </div>
 
                         <div className="w-full relative group">
+                            {/* Textarea 영역 */}
                             <div className="relative flex flex-col w-full rounded-3xl border border-stone-200 bg-white focus-within:ring-1 focus-within:ring-stone-300 focus-within:shadow-md transition-all overflow-hidden p-2 dark:bg-gray-950 dark:border-gray-800">
                                 <Textarea
                                     ref={textareaRef}
@@ -152,6 +170,7 @@ export default function AgentChat() {
                             </div>
                         </div>
 
+                        {/* 추천 버튼 영역 */}
                         <div className="flex flex-wrap justify-start gap-2">
                             <Button variant="outline" className="rounded-full bg-stone-100 border-stone-100 text-sm text-muted-foreground" onClick={() => handleSuggestionClick("최근 그랑프리 우승자는 누구야?")}>
                                 <Trophy className="w-4 h-4 mr-2" /> 최근 우승자
@@ -174,16 +193,15 @@ export default function AgentChat() {
                                             <AvatarFallback className="bg-primary/10 text-primary"><Sparkles size={16} /></AvatarFallback>
                                         ) : (
                                             <>
-                                                <AvatarImage src="/avatars/quokka.jpg" />
+                                                <AvatarImage src={user?.profileImageUrl || "https://bundui-images.netlify.app/avatars/08.png"} />
                                                 <AvatarFallback className="bg-secondary text-secondary-foreground">
-                                                    {/* 이니셜도 닉네임 기반으로 동적 처리 가능 (지금은 앞 2글자) */}
-                                                    {nickname.substring(0, 2).toUpperCase()}
+                                                    {fallbackInitials}
                                                 </AvatarFallback>
                                             </>
                                         )}
                                     </Avatar>
                                     <div className={`flex-1 space-y-2 ${msg.role === "user" ? "text-right" : "text-left"}`}>
-                                        <p className="text-sm font-semibold">{msg.role === "assistant" ? "Apex Assistant" : nickname}</p>
+                                        <p className="text-sm font-semibold">{msg.role === "assistant" ? "Apex Assistant" : displayNickname}</p>
                                         <div className="text-base leading-relaxed whitespace-pre-wrap text-foreground/90">
                                             {msg.content}
                                         </div>
@@ -191,7 +209,6 @@ export default function AgentChat() {
                                 </div>
                             ))}
 
-                            {/* 로딩 중일 때 표시되는 Spinner UI */}
                             {isLoading && (
                                 <div className="flex items-start gap-4">
                                     <Avatar className="w-10 h-10 mt-1 border-gray-0 shrink-0">
