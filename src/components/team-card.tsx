@@ -1,23 +1,34 @@
-// src/components/schedule-card.tsx
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator,} from "@/components/ui/breadcrumb"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select"
 import * as React from "react";
-import {teams} from "@/data/teams";
-import Link from "next/link";
-import {Button} from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip"
+import Image from "next/image";
 import { useRouter } from "next/navigation";
+
+import { Card, CardTitle, CardDescription } from "@/components/ui/card";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const TEAMS_DATA = [
+    { id: "mclaren", name: "McLaren", fullName: "McLaren Formula 1 Team", scale: 1.30 },
+    { id: "ferrari", name: "Ferrari", fullName: "Scuderia Ferrari HP", scale: 1.00 },
+    { id: "redbullracing", name: "Red Bull Racing", fullName: "Oracle Red Bull Racing", scale: 1.30 },
+    { id: "mercedes", name: "Mercedes", fullName: "Mercedes-AMG PETRONAS F1 Team", scale: 0.9 },
+    { id: "astonmartin", name: "Aston Martin", fullName: "Aston Martin Aramco Formula One Team", scale: 1.5 },
+    { id: "alpine", name: "Alpine", fullName: "BWT Alpine Formula One Team", scale: 1.20 },
+    { id: "williams", name: "Williams", fullName: "Williams Racing", scale: 1.10 },
+    { id: "racingbulls", name: "Racing Bulls", fullName: "Visa Cash App RB Formula One Team", scale: 1.25 },
+    { id: "haas", name: "Haas", fullName: "MoneyGram Haas F1 Team", scale: 1.25 },
+    { id: "audi", name: "Audi", fullName: "Audi F1 Team", scale: 1.4 },
+    { id: "cadillac", name: "Cadillac", fullName: "Cadillac Formula 1 Team", scale: 1.2 },
+];
 
 export function TeamCard() {
     const router = useRouter();
-    const [year, setYear] = React.useState<string>("2025"); // 기본 연도
+    const [year, setYear] = React.useState<string>("2026");
 
     return (
         <div>
-            {/* Breadcrumb */}
+            {/* Breadcrumb & Year Selector */}
             <Breadcrumb className="mx-7 mt-6">
                 <BreadcrumbList>
                     <BreadcrumbItem>
@@ -25,7 +36,7 @@ export function TeamCard() {
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbLink href="/dashboard/schedules" className="text-sm">Schedules</BreadcrumbLink>
+                        <BreadcrumbLink href="/dashboard/teams" className="text-sm">Teams</BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
@@ -33,7 +44,8 @@ export function TeamCard() {
                             <SelectTrigger className="w-[100px] text-sm">
                                 <SelectValue placeholder="Year" />
                             </SelectTrigger>
-                            <SelectContent className="border-gray-200">
+                            <SelectContent className="border-stone-200">
+                                <SelectItem value="2026">2026</SelectItem>
                                 <SelectItem value="2025">2025</SelectItem>
                                 <SelectItem value="2024">2024</SelectItem>
                                 <SelectItem value="2023">2023</SelectItem>
@@ -49,78 +61,51 @@ export function TeamCard() {
                 <h1 className="text-4xl font-bold">TEAMS {year}</h1>
             </div>
 
-            {/* 팀 카드 */}
+            {/* 팀 카드 리스트 */}
             <div className="w-full px-15 pb-15 pt-5">
-                <div className="grid gap-6 grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-                    {teams.map((team, idx) => (
-                        <Card
-                            key={idx}
-                            className="relative w-full rounded-xl border border-gray-200 shadow-sm hover:shadow-xl transition-shadow duration-200 cursor-pointer"
-                            onClick={() => {
-                                router.push(`/teams/${team.shortName.toLowerCase().replace(/\s+/g, "-")}`);
-                            }}
-                        >
-                            {/* Card Header */}
-                            <CardHeader
-                                className="px-3 flex items-center gap-3"
-                                style={{ minHeight: "70px" }}
+                <div className="grid gap-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+                    {TEAMS_DATA.map((team) => {
+                        const teamLogoPath = `/team/${team.id}-${year}.png`;
+
+                        return (
+                            <Card
+                                key={team.id}
+                                className="w-full rounded-2xl border border-stone-200 duration-200 p-6 cursor-pointer hover:shadow-lg transition-shadow"
+                                onClick={() => {
+                                    router.push(`/dashboard/teams/${year}/${team.id}`);
+                                }}
                             >
-                                <img src={team.img} alt={team.shortName} className="w-11 h-11 rounded-md" />
-                                <div className="flex flex-col justify-center">
-                                    <CardTitle className="text-xl font-semibold">{team.shortName}</CardTitle>
-                                    <CardDescription className="text-sm text-gray-600">{team.name}</CardDescription>
+                                <div className="flex flex-col items-center justify-center text-center gap-4">
+
+                                    <div className="h-24 w-full flex items-center justify-center">
+                                        <div
+                                            className="relative w-full h-full"
+                                            style={{ transform: `scale(${team.scale})` }}
+                                        >
+                                            <Image
+                                                src={teamLogoPath}
+                                                alt={team.name}
+                                                fill
+                                                className="object-contain" // 비율이 깨지지 않도록 유지
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* 텍스트 영역 */}
+                                    <div className="space-y-1.5 mt-2">
+                                        <CardTitle className="text-lg font-bold leading-tight text-gray-950 dark:text-gray-100">
+                                            {team.name}
+                                        </CardTitle>
+                                        <CardDescription className="text-[11px] text-gray-500 line-clamp-2 h-7" title={team.fullName}>
+                                            {team.fullName}
+                                        </CardDescription>
+                                    </div>
                                 </div>
-                            </CardHeader>
-
-                            <div className="border-t border-dashed border-gray-300" />
-
-                            <CardContent className="pt-0 px-3 pb-3">
-                                <div className="grid grid-cols-2 gap-2 mt-2">
-                                    {team.drivers.map((driver) => (
-                                        <TooltipProvider key={driver.number}>
-                                            <Tooltip>
-                                                <TooltipTrigger asChild>
-                                                    <Button
-                                                        variant="outline"
-                                                        className="flex items-center justify-center h-20 border-gray-200 gap-2"
-                                                        asChild
-                                                        onClick={(e) => e.stopPropagation()} // ★ 클릭 이벤트 전파 막기
-                                                    >
-                                                        <Link
-                                                            href={`/drivers/${driver.number}`}
-                                                            className="flex items-center justify-center gap-2 w-full"
-                                                        >
-                                                            <img
-                                                                src={driver.img}
-                                                                alt={driver.lastName}
-                                                                className="w-8 h-8 rounded-sm flex-shrink-0"
-                                                            />
-                                                            <div className="flex flex-col items-start leading-tight truncate hidden sm:flex">
-                                                                <span className="text-xs text-gray-500">{driver.firstName}</span>
-                                                                <span className="text-sm font-medium">{driver.lastName}</span>
-                                                            </div>
-                                                        </Link>
-                                                    </Button>
-                                                </TooltipTrigger>
-                                                <TooltipContent>
-                                                    <p>{driver.firstName} {driver.lastName}</p>
-                                                </TooltipContent>
-                                            </Tooltip>
-                                        </TooltipProvider>
-                                    ))}
-                                </div>
-                            </CardContent>
-
-                            {/* 팀 컬러 바 */}
-                            <div
-                                className="absolute bottom-0 left-0 w-full h-1 rounded-b-xl"
-                                style={{ backgroundColor: team.color }}
-                            />
-                        </Card>
-                    ))}
+                            </Card>
+                        );
+                    })}
                 </div>
             </div>
-
         </div>
-    )
+    );
 }

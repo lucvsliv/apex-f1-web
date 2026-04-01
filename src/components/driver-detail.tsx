@@ -139,7 +139,7 @@ export default function DriverDetail() {
     ];
 
     return (
-        <div className="pb-20">
+        <div>
             {/* 1. Breadcrumb */}
             <Breadcrumb className="mx-7 mt-6">
                 <BreadcrumbList>
@@ -153,10 +153,10 @@ export default function DriverDetail() {
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <Select value={currentYear} onValueChange={handleYearChange}>
-                            <SelectTrigger className="h-8 text-sm border-none bg-transparent hover:bg-gray-100 p-1">
+                            <SelectTrigger className="text-sm">
                                 <SelectValue placeholder="Year" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="border-stone-200">
                                 <SelectItem value="2026">2026</SelectItem>
                                 <SelectItem value="2025">2025</SelectItem>
                                 <SelectItem value="2024">2024</SelectItem>
@@ -167,10 +167,10 @@ export default function DriverDetail() {
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <Select value={currentDriverId} onValueChange={handleDriverChange}>
-                            <SelectTrigger className="h-8 text-sm font-semibold border-none bg-transparent hover:bg-gray-100 p-1">
+                            <SelectTrigger className="text-sm">
                                 <SelectValue placeholder="Driver" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="border-stone-200">
                                 {driversList.map(d => (
                                     <SelectItem key={d.driverId} value={d.driverId}>
                                         {d.name}
@@ -183,7 +183,7 @@ export default function DriverDetail() {
             </Breadcrumb>
 
             {/* 2. Hero Section */}
-            <div className="mx-7 mt-10 grid grid-cols-1 md:grid-cols-3 gap-8 items-center bg-white p-8 rounded-2xl border shadow-sm">
+            <div className="mx-7 mt-10 grid grid-cols-1 md:grid-cols-3 gap-8 items-center p-8 rounded-2xl border-muted shadow-sm">
                 <div className="flex justify-center md:justify-end">
                     <Image
                         src={imagePath}

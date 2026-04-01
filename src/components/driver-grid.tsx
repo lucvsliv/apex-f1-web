@@ -91,7 +91,7 @@ export default function DriverGrid() {
                             <SelectTrigger className="w-[100px] text-sm">
                                 <SelectValue placeholder="Year" />
                             </SelectTrigger>
-                            <SelectContent className="border-gray-200">
+                            <SelectContent className="border-stone-200">
                                 <SelectItem value="2026">2026</SelectItem>
                                 <SelectItem value="2025">2025</SelectItem>
                                 <SelectItem value="2024">2024</SelectItem>
@@ -123,7 +123,7 @@ export default function DriverGrid() {
                                 <Item
                                     key={driver.driverId}
                                     variant="outline"
-                                    className="cursor-pointer hover:shadow-lg transition-shadow"
+                                    className="cursor-pointer hover:shadow-lg transition-shadow border-stone-200 duration-200"
                                     onClick={() => router.push(`/dashboard/drivers/${year}/${driver.driverId}`)}
                                 >
                                     <ItemHeader>
@@ -133,8 +133,6 @@ export default function DriverGrid() {
                                             width={300}
                                             height={300}
                                             className="aspect-square w-full rounded-sm object-cover object-top"
-                                            // 💡 이미지가 없을 경우를 대비한 Fallback 처리 (옵션)
-                                            // onError={(e) => { e.currentTarget.src = '/images/drivers/default-avatar.webp' }}
                                         />
                                     </ItemHeader>
                                     <ItemContent className="overflow-hidden">
