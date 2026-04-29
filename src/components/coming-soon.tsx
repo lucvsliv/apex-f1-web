@@ -25,7 +25,7 @@ export default function ComingSoon() {
             <div
                 className={cn(
                     "relative flex flex-1 flex-col",
-                    "bg-[url(/grandprix/suzuka.jpg)] bg-cover bg-center",
+                    "bg-[url(/grandprix/miami.jpg)] bg-cover bg-center",
                     "min-h-[40svh] lg:min-h-full"
                 )}
             >
@@ -37,10 +37,10 @@ export default function ComingSoon() {
                 <div className="flex flex-col items-center space-y-10 text-center mt-15 lg:mt-15 w-full">
                     <div className="relative z-10 flex flex-col items-center space-y-4 text-center">
                         <p className="text-stone-500 lg:text-lg max-w-md mb-0 leading-relaxed">
-                            스즈카 그랑프리는 Apex F1과 함께
+                            마이애미 그랑프리는 Apex F1과 함께
                         </p>
                         <h1 className="text-4xl font-extrabold text-stone-900 tracking-tight lg:text-5xl">
-                            Ready for Suzuka?
+                            Ready for Miami?
                         </h1>
                     </div>
 

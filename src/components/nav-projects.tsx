@@ -25,7 +25,7 @@ export function NavProjects({
     return (
         <SidebarGroup className="group-data-[collapsible=icon]:hidden">
             <SidebarGroupLabel className={"text-stone-400"}>
-                Playground
+                Store
             </SidebarGroupLabel>
             <SidebarMenu className={"text-stone-600"}>
                 {projects.map((item) => (

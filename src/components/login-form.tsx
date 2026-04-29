@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import Script from "next/script";
 import api from "@/lib/api/client";
-import { useUserStore } from "@/store/useUserStore"; // 💡 Zustand 스토어 임포트
+import { useUserStore } from "@/store/useUserStore";
 
 export function LoginForm({
                               className,

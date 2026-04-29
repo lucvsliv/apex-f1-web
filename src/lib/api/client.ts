@@ -27,6 +27,8 @@ api.interceptors.request.use(
 );
 
 // 3. Response Interceptor (응답을 받기 직전에 가로챔)
+let isAlerting = false;
+
 api.interceptors.response.use(
     (response) => {
         return response;
@@ -34,7 +36,8 @@ api.interceptors.response.use(
     (error) => {
         // 백엔드에서 401(미인증) 또는 403(권한 없음) 에러가 내려오면
         if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-            if (typeof window !== "undefined") {
+            if (typeof window !== "undefined" && !isAlerting) {
+                isAlerting = true;
                 // 토큰이 만료되었거나 변조되었으므로 스토리지에서 삭제
                 localStorage.removeItem("apex_access_token");
 
