@@ -2,7 +2,8 @@
 
 import * as React from "react"
 import { useEffect } from "react"
-import { Trophy, Timer, Shell, Map, PieChart, LineSquiggle, ClipboardList, Bot, Sparkles } from "lucide-react"
+// 💡 ShoppingCart, CreditCard 아이콘 추가
+import { Trophy, Timer, Shell, Map, PieChart, LineSquiggle, ClipboardList, Bot, Sparkles, Store, ShoppingCart, CreditCard } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
@@ -11,22 +12,15 @@ import { ServiceLogo } from "@/components/service-logo"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail, } from "@/components/ui/sidebar"
 import { IconBorderCornerPill, IconCar4wd, IconHelmet, IconCalendarEvent, } from "@tabler/icons-react";
 
-// Zustand 스토어 임포트
 import { useUserStore } from "@/store/useUserStore"
 
 const data = {
-    logo: {
-        name: "Apex F1",
-        url: "/dashboard",
-        icon: "/icons/logo.svg",
-    },
+    logo: { name: "Apex F1", url: "/dashboard", icon: "/icons/logo.svg",},
+
     aiAgent: [
-        {
-            title: "Apex Assistant",
-            url: "/dashboard/agent/chat",
-            icon: Sparkles,
-        },
+        { title: "Apex Agent", url: "/dashboard/agent/chat", icon: Sparkles,},
     ],
+
     navMain: [
         { title: "Schedules", url: "/dashboard/schedules", icon: IconCalendarEvent },
         { title: "Results", url: "/dashboard/results", icon: Timer },
@@ -36,23 +30,27 @@ const data = {
         { title: "Ranks", url: "/dashboard/ranks", icon: Trophy },
         { title: "Circuits", url: "/dashboard/circuits", icon: LineSquiggle },
     ],
-    projects: [
-        { name: "Board", url: "#", icon: ClipboardList },
-        { name: "Sales & Marketing", url: "#", icon: PieChart },
-        { name: "Travel", url: "#", icon: Map },
+
+    originalGoods: [
+        { title: "Products", url: "/dashboard/store/product", icon: Store },
+        { title: "Cart", url: "/dashboard/store/cart", icon: ShoppingCart },
+        { title: "Checkout", url: "/dashboard/store/checkout", icon: CreditCard },
     ],
+
+    // projects: [
+    //     { name: "Board", url: "#", icon: ClipboardList },
+    //     { name: "Sales & Marketing", url: "#", icon: PieChart },
+    //     { name: "Travel", url: "#", icon: Map },
+    // ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-    // Zustand 스토어에서 상태와 함수 가져오기
     const { user, isLoading, fetchUser } = useUserStore();
 
-    // 컴포넌트 마운트 시 API 호출
     useEffect(() => {
         fetchUser();
     }, [fetchUser]);
 
-    // 로딩 중이거나 미로그인 상태일 때 NavUser 컴포넌트에 넘겨줄 Fallback 데이터
     const displayUser = {
         nickname: user?.nickname ?? (isLoading ? "Loading..." : "Guest"),
         email: user?.email ?? (isLoading ? "Please wait" : "Please sign in"),
@@ -65,9 +63,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <ServiceLogo logo={data.logo} />
             </SidebarHeader>
             <SidebarContent>
-                <NavMain label="AI Agent" items={data.aiAgent} />
+                <NavMain label="Apex AI" items={data.aiAgent} />
                 <NavMain label="Dataground" items={data.navMain} />
-                <NavProjects projects={data.projects} />
+                <NavMain label="Original Goods" items={data.originalGoods} />
             </SidebarContent>
             <SidebarFooter>
                 <NavUser user={displayUser}/>

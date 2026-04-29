@@ -9,11 +9,33 @@ export function SiteHeader() {
 
     const pageTitleMap: Record<string, string> = {
         "/dashboard": "Dashboard",
+        "/dashboard/agent/chat": "Apex Agent",
         "/dashboard/schedules": "Schedules",
+        "/dashboard/results": "Results",
+        "/dashboard/teams": "Teams",
+        "/dashboard/drivers": "Drivers",
+        "/dashboard/cars": "Cars",
+        "/dashboard/ranks": "Ranks",
+        "/dashboard/circuits": "Circuits",
+        "/dashboard/store/product": "Products",
+        "/dashboard/store/cart": "Cart",
+        "/dashboard/store/checkout": "Checkout",
+        "/dashboard/profile": "Account",
+        "/dashboard/profile/edit": "Edit Profile",
         "/dashboard/reports": "Reports",
     }
 
-    const title = pageTitleMap[pathname] ?? "Untitled"
+    let title = pageTitleMap[pathname]
+
+    if (!title) {
+        if (pathname.startsWith("/dashboard/drivers/")) {
+            title = "Drivers"
+        } else if (pathname.startsWith("/dashboard/teams/")) {
+            title = "Teams"
+        } else {
+            title = "Untitled"
+        }
+    }
 
     return (
         <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b border-gray-200">

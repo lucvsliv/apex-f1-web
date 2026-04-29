@@ -26,7 +26,7 @@ const calculateTimeLeft = (targetDate: Date): TimeLeft => {
 };
 
 export function Countdown() {
-    const [targetDate] = useState(() => new Date("2026-03-29T14:00:00+09:00"));
+    const [targetDate] = useState(() => new Date("2026-05-04T05:00:00+09:00"));
     const [timeLeft, setTimeLeft] = useState<TimeLeft>(calculateTimeLeft(targetDate));
 
     const [mounted, setMounted] = useState(false);

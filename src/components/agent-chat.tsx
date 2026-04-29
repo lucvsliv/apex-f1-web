@@ -126,10 +126,10 @@ export default function AgentChat() {
                     <BreadcrumbItem>
                         <Select>
                             <SelectTrigger className="w-fit text-sm">
-                                <SelectValue placeholder="Apex Assistant" />
+                                <SelectValue placeholder="Apex Agent" />
                             </SelectTrigger>
                             <SelectContent className="border-gray-200">
-                                <SelectItem value="Apex Assistant">Apex Assistant</SelectItem>
+                                <SelectItem value="Apex Agent">Apex Agent</SelectItem>
                             </SelectContent>
                         </Select>
                     </BreadcrumbItem>
@@ -161,7 +161,7 @@ export default function AgentChat() {
                                 />
                                 <div className="flex justify-between items-center px-2 pb-1 mt-2">
                                     <div className="text-xs text-muted-foreground px-2 flex items-center gap-1">
-                                        <Sparkles className="w-3 h-3" /> Apex Assistant
+                                        <Sparkles className="w-3 h-3" /> Apex Agent
                                     </div>
                                     <Button size="icon" className="rounded-full w-10 h-10 bg-stone-700" onClick={handleSend} disabled={!input.trim() || isLoading}>
                                         <Send className="w-4 h-4" />
@@ -201,7 +201,7 @@ export default function AgentChat() {
                                         )}
                                     </Avatar>
                                     <div className={`flex-1 space-y-2 ${msg.role === "user" ? "text-right" : "text-left"}`}>
-                                        <p className="text-sm font-semibold">{msg.role === "assistant" ? "Apex Assistant" : displayNickname}</p>
+                                        <p className="text-sm font-semibold">{msg.role === "assistant" ? "Apex Agent" : displayNickname}</p>
                                         <div className="text-base leading-relaxed whitespace-pre-wrap text-foreground/90">
                                             {msg.content}
                                         </div>
@@ -215,7 +215,7 @@ export default function AgentChat() {
                                         <AvatarFallback className="bg-primary/10 text-primary"><Sparkles size={16} /></AvatarFallback>
                                     </Avatar>
                                     <div className="flex-1 space-y-2 text-left">
-                                        <p className="text-sm font-semibold">Apex Assistant</p>
+                                        <p className="text-sm font-semibold">Apex Agent</p>
                                         <div className="flex w-full max-w-xs flex-col gap-4 [--radius:1rem]">
                                             <Item variant="muted">
                                                 <ItemMedia>
