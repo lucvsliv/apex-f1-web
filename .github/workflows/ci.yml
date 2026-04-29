@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -24,7 +24,6 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      # 💡 린트(문법 검사)와 빌드가 정상적으로 되는지 테스트합니다.
       - name: Check Lint and Build
         run: |
           npm run lint
