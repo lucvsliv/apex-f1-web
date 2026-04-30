@@ -1,6 +1,6 @@
 import axios from "axios";
 
-// 1. 기본 인스턴스 생성
+// 1. 기본 Instance 생성
 const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1",
     headers: {
