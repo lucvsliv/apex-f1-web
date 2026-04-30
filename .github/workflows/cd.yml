@@ -83,8 +83,8 @@ services:
       - .env
 EOF
 
-            # [주의] 기존 docker compose build 과정 없이 바로 up
             echo "[*] 도커 컨테이너를 다시 실행합니다..."
+            docker compose down
             docker compose up -d
 
             docker image prune -f
