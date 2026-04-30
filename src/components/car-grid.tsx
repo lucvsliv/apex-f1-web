@@ -50,13 +50,13 @@ export default function CarGrid() {
             </Breadcrumb>
 
             {/* 그랑프리 년도 정보 */}
-            <div className="text-left p-15 pb-10">
+            <div className="text-left px-8 sm:pb-5 pt-10 sm:pt-15 pb-10">
                 <p className="text-xl" style={{ fontFamily: "'Formula 1', monospace" }}>FORMULA 1</p>
                 <h1 className="text-4xl font-bold">CARS {year}</h1>
             </div>
 
             {/* 팀 차들 */}
-            <div className="relative w-full pt-5 p-15 rounded-xl overflow-hidden pb-15">
+            <div className="relative w-full pt-5 px-6 sm:pb-5 rounded-xl overflow-hidden pb-5 sm:pb-15">
                 <div className="grid gap-6 grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-2">
                     {cars.map((car, index) => {
                         const showText = windowWidth >= 400;

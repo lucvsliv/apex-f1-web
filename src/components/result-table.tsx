@@ -189,7 +189,7 @@ export function ResultTable() {
             </Breadcrumb>
 
             {/* 대회 정보 영역 */}
-            <div className="text-left p-15 pb-10">
+            <div className="text-left px-8 sm:pb-5 pt-10 sm:pt-15 pb-10">
                 <p className="text-xl" style={{ fontFamily: "'Formula 1', monospace" }}>FORMULA 1</p>
                 <h1 className="text-4xl font-bold">{`LOUIS VUITTON ${grandPrix.toUpperCase()} GRAND PRIX ${year}`}</h1>
                 <p className="text-xl font-bold text-gray-500 mt-3">{session.toUpperCase()}</p>
@@ -207,7 +207,7 @@ export function ResultTable() {
             </div>
 
             {/* 테이블 & 서킷 정보 */}
-            <div className="flex flex-col lg:flex-row mx-15 gap-20 items-start pb-15">
+            <div className="flex flex-col lg:flex-row mx-6 gap-20 items-start sm:pb-5 pb-5 sm:pb-15">
                 {/* 순위 정보 */}
                 <div className="flex-1">
                     {/* 테이블 박스 */}

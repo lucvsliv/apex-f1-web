@@ -44,7 +44,7 @@ export function NavUser({
         profileImageUrl: string
     }
 }) {
-    const { isMobile } = useSidebar()
+    const { isMobile, setOpenMobile } = useSidebar()
     const router = useRouter()
 
     const { user: fullUser, clearUser } = useUserStore()
@@ -120,9 +120,13 @@ export function NavUser({
                             <DropdownMenuSeparator />
 
                             <DropdownMenuGroup>
-                                {/* Account */}
                                 <DropdownMenuItem
-                                    onSelect={() => !isGuest && router.push("/dashboard/profile")}
+                                    onSelect={() => {
+                                        if (!isGuest) {
+                                            router.push("/dashboard/profile")
+                                            if (isMobile) setOpenMobile(false)
+                                        }
+                                    }}
                                     className={!isGuest ? "cursor-pointer" : ""}
                                     disabled={isGuest}
                                 >
@@ -132,7 +136,10 @@ export function NavUser({
 
                                 {/* Membership */}
                                 <DropdownMenuItem
-                                    onSelect={() => router.push("/membership")}
+                                    onSelect={() => {
+                                        router.push("/membership")
+                                        if (isMobile) setOpenMobile(false)
+                                    }}
                                     className="cursor-pointer"
                                 >
                                     <IconCarambola className="mr-2 size-4" />

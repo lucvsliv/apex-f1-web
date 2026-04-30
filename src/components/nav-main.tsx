@@ -2,13 +2,13 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, } from "@/components/ui/sidebar"
+import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
 import * as React from "react"
 
 export function NavMain({
-                            label,
-                            items,
-                        }: {
+    label,
+    items,
+}: {
     label: string
     items: {
         title: string
@@ -17,6 +17,7 @@ export function NavMain({
     }[]
 }) {
     const pathname = usePathname()
+    const { setOpenMobile, isMobile } = useSidebar()
 
     return (
         <SidebarGroup>
@@ -32,7 +33,7 @@ export function NavMain({
                             isActive={pathname === item.url}
                             className="data-[active=true]:bg-sidebar-foreground/10"
                         >
-                            <Link href={item.url}>
+                            <Link href={item.url} onClick={() => isMobile && setOpenMobile(false)}>
                                 {item.icon && (
                                     <item.icon
                                         className="shrink-0 !size-4.5"

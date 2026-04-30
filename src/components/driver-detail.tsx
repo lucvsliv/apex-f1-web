@@ -148,15 +148,16 @@ export default function DriverDetail() {
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
+
                         <BreadcrumbLink href="/dashboard/drivers" className="text-sm">Drivers</BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <Select value={currentYear} onValueChange={handleYearChange}>
-                            <SelectTrigger className="text-sm">
+                            <SelectTrigger className="text-sm h-8 border-stone-200 bg-white shadow-sm font-medium focus:ring-0 w-[100px]">
                                 <SelectValue placeholder="Year" />
                             </SelectTrigger>
-                            <SelectContent className="border-stone-200">
+                            <SelectContent className="border-stone-200 bg-white">
                                 <SelectItem value="2026">2026</SelectItem>
                                 <SelectItem value="2025">2025</SelectItem>
                                 <SelectItem value="2024">2024</SelectItem>
@@ -167,10 +168,10 @@ export default function DriverDetail() {
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <Select value={currentDriverId} onValueChange={handleDriverChange}>
-                            <SelectTrigger className="text-sm">
+                            <SelectTrigger className="text-sm h-8 border-stone-200 bg-white shadow-sm font-medium focus:ring-0 w-[180px]">
                                 <SelectValue placeholder="Driver" />
                             </SelectTrigger>
-                            <SelectContent className="border-stone-200">
+                            <SelectContent className="border-stone-200 bg-white">
                                 {driversList.map(d => (
                                     <SelectItem key={d.driverId} value={d.driverId}>
                                         {d.name}
@@ -183,8 +184,9 @@ export default function DriverDetail() {
             </Breadcrumb>
 
             {/* 2. Hero Section */}
-            <div className="mx-7 mt-10 grid grid-cols-1 md:grid-cols-3 gap-8 items-center p-8 rounded-2xl border-muted shadow-sm">
-                <div className="flex justify-center md:justify-end">
+            <div className="px-6 w-full mt-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center p-8 rounded-2xl border border-stone-200 shadow-sm bg-white">
+                    <div className="flex justify-center md:justify-end">
                     <Image
                         src={imagePath}
                         alt={driverDetail.name}
@@ -223,9 +225,10 @@ export default function DriverDetail() {
                     </div>
                 </div>
             </div>
+        </div>
 
             {/* 3. Stats & Chart Section (2-Column Layout) */}
-            <div className="mx-7 mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="px-6 w-full mt-8 pb-10 sm:pb-15 grid grid-cols-1 lg:grid-cols-3 gap-8">
 
                 {/* 왼쪽: 레이더 차트 */}
                 <Card className="lg:col-span-1 border-gray-100 shadow-sm flex flex-col">
@@ -284,7 +287,7 @@ export default function DriverDetail() {
 
 function StatCard({ title, value }: { title: string, value: string | number }) {
     return (
-        <Card className="bg-gray-50/50 border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+        <Card className="bg-stone-50/50 border-stone-200 shadow-sm hover:shadow-md transition-shadow">
             <CardHeader className="p-4 pb-2">
                 <CardTitle className="text-xs text-gray-500 uppercase font-bold tracking-wider">{title}</CardTitle>
             </CardHeader>

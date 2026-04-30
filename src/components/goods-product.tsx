@@ -155,12 +155,12 @@ export function GoodsProduct() {
             </Breadcrumb>
 
             {/* 그랑프리 년도 타이틀 */}
-            <div className="text-left p-15 pb-10">
+            <div className="text-left px-8 sm:pb-5 pt-10 sm:pt-15 pb-10">
                 <p className="text-xl" style={{ fontFamily: "'Formula 1', monospace" }}>APEX-F1</p>
                 <h1 className="text-4xl font-bold">ORIGINAL STORE</h1>
             </div>
 
-            <div className="w-full pt-5 p-15 pb-15">
+            <div className="w-full pt-5 px-6 sm:pb-5 pb-5 sm:pb-15">
                 <div className="flex flex-col gap-8 lg:flex-row">
                     {/* Desktop Filters Sidebar */}
                     <aside className="hidden w-56 lg:block shrink-0">
@@ -225,7 +225,7 @@ export function GoodsProduct() {
                         ) : (
                             <div className={`grid gap-6 ${viewMode === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4" : "grid-cols-1"}`}>
                                 {filteredProducts.map((product) => (
-                                    <Card key={product.id} className="group border-stone-200 transition-shadow hover:shadow-lg">
+                                    <Card key={product.id} className="group border-stone-200 shadow-none transition-colors hover:border-stone-300">
                                         <CardContent className="p-3 sm:p-4">
                                             <div className={`relative ${viewMode === 'list' ? 'flex flex-row gap-4' : ''}`}>
 
