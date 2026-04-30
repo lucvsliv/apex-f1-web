@@ -15,8 +15,16 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Next.js 빌드 (Standalone 모드 사용으로 용량 최적화)
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_KAKAO_JS_KEY
+ARG NEXT_PUBLIC_TOSS_CLIENT_KEY
+
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_KAKAO_JS_KEY=$NEXT_PUBLIC_KAKAO_JS_KEY
+ENV NEXT_PUBLIC_TOSS_CLIENT_KEY=$NEXT_PUBLIC_TOSS_CLIENT_KEY
+
 ENV NEXT_TELEMETRY_DISABLED 1
+
 RUN npm run build
 
 # ---------------------------------------------------
