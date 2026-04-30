@@ -70,6 +70,19 @@ jobs:
             echo "[*] 최신 프론트엔드 이미지를 Pull 받습니다..."
             docker pull ghcr.io/${{ github.repository_owner }}/apex-f1-web:latest
 
+            echo "[*] docker-compose.yml 파일 생성 중..."
+            cat << 'EOF' > docker-compose.yml
+            services:
+              web:
+                image: ghcr.io/${{ github.repository_owner }}/apex-f1-web:latest
+                container_name: apex-f1-web
+                ports:
+                  - "3000:3000"
+                restart: unless-stopped
+                env_file:
+                  - .env
+            EOF
+
             # [주의] 기존 docker compose build 과정 없이 바로 up
             echo "[*] 도커 컨테이너를 다시 실행합니다..."
             docker compose up -d
