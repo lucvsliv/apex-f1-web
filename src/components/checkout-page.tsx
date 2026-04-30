@@ -100,7 +100,7 @@ const CheckoutPage = () => {
                 </BreadcrumbList>
             </Breadcrumb>
 
-            <div className="w-full pt-5 p-15 pb-15">
+            <div className="w-full pt-5 px-6 sm:pb-5 pb-5 sm:pb-15">
                 <div className="mx-auto max-w-5xl">
                     <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
 
@@ -112,7 +112,7 @@ const CheckoutPage = () => {
                                 {paymentMethods.map((method) => (
                                     <Card
                                         key={method.id}
-                                        className={`cursor-pointer transition-all duration-200 border-stone-200 ${
+                                        className={`cursor-pointer transition-all duration-200 shadow-none border-stone-200 ${
                                             selectedPayment === method.id
                                                 ? "ring-primary border-primary/20 ring-2"
                                                 : "hover:border-muted-foreground/20"
@@ -216,7 +216,7 @@ const CheckoutPage = () => {
                             <h2 className="text-foreground text-2xl font-semibold">Order Details</h2>
 
                             {/* Course Card */}
-                            <Card className="border-stone-200">
+                            <Card className="border-stone-200 shadow-none">
                                 <CardContent>
                                     <div className="flex space-x-4">
                                         <img
@@ -239,7 +239,7 @@ const CheckoutPage = () => {
                             </Card>
 
                             {/* Discount Section */}
-                            <Card className="border-stone-200">
+                            <Card className="border-stone-200 shadow-none">
                                 <CardContent>
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center space-x-2">
@@ -255,7 +255,7 @@ const CheckoutPage = () => {
                             </Card>
 
                             {/* Price Breakdown */}
-                            <Card className="border-stone-200">
+                            <Card className="border-stone-200 shadow-none">
                                 <CardContent className="space-y-4">
                                     <div className="flex items-center justify-between">
                                         <span className="text-foreground">Price</span>

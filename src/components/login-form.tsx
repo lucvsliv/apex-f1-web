@@ -158,15 +158,7 @@ export function LoginForm({
                             </Field>
 
                             <Field>
-                                <div className="flex items-center">
-                                    <FieldLabel htmlFor="password">Password</FieldLabel>
-                                    <a
-                                        href="#"
-                                        className="ml-auto text-sm underline-offset-2 hover:underline text-muted-foreground"
-                                    >
-                                        Forgot your password?
-                                    </a>
-                                </div>
+                                <FieldLabel htmlFor="password">Password</FieldLabel>
                                 <Input
                                     id="password"
                                     type="password"
@@ -176,6 +168,14 @@ export function LoginForm({
                                     className="placeholder:text-stone-400/70"
                                     placeholder="••••••••"
                                 />
+                                <div className="text-right mt-1">
+                                    <a
+                                        href="#"
+                                        className="text-sm underline-offset-2 hover:underline text-muted-foreground"
+                                    >
+                                        Forgot your password?
+                                    </a>
+                                </div>
                             </Field>
 
                             <Field>

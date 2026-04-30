@@ -53,13 +53,13 @@ export default function CircuitGrid() {
             </Breadcrumb>
 
             {/* 그랑프리 년도 정보 */}
-            <div className="text-left p-15 pb-10">
+            <div className="text-left px-8 sm:pb-5 pt-10 sm:pt-15 pb-10">
                 <p className="text-xl" style={{ fontFamily: "'Formula 1', monospace" }}>FORMULA 1</p>
                 <h1 className="text-4xl font-bold">CIRCUITS {year}</h1> {/* 선택한 연도 적용 */}
             </div>
 
             {/* 서킷 정보 */}
-            <div className="w-full px-15 pb-15 pt-5">
+            <div className="w-full pt-5 px-6 sm:pb-5 pb-5 sm:pb-15">
                 <div className="grid gap-6 grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
                     {circuits.map(circuit => (
                         <Card

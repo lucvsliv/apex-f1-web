@@ -3,7 +3,7 @@
 import * as React from "react"
 import { useEffect } from "react"
 // 💡 ShoppingCart, CreditCard 아이콘 추가
-import { Trophy, Timer, Shell, Map, PieChart, LineSquiggle, ClipboardList, Bot, Sparkles, Store, ShoppingCart, CreditCard } from "lucide-react"
+import { Trophy, Timer, Shell, Map, PieChart, LineSquiggle, ClipboardList, Bot, Sparkles, Store, ShoppingCart, CreditCard, MessageSquare } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
@@ -37,6 +37,10 @@ const data = {
         { title: "Checkout", url: "/dashboard/store/checkout", icon: CreditCard },
     ],
 
+    community: [
+        { title: "Board", url: "/dashboard/community", icon: MessageSquare },
+    ],
+
     // projects: [
     //     { name: "Board", url: "#", icon: ClipboardList },
     //     { name: "Sales & Marketing", url: "#", icon: PieChart },
@@ -66,6 +70,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <NavMain label="Apex AI" items={data.aiAgent} />
                 <NavMain label="Dataground" items={data.navMain} />
                 <NavMain label="Original Goods" items={data.originalGoods} />
+                <NavMain label="Community" items={data.community} />
             </SidebarContent>
             <SidebarFooter>
                 <NavUser user={displayUser}/>

@@ -118,7 +118,7 @@ export default function Cart() {
                 </BreadcrumbList>
             </Breadcrumb>
 
-            <div className="w-full pt-5 p-15 pb-15 bg-background min-h-screen">
+            <div className="w-full pt-5 px-6 sm:pb-5 pb-5 sm:pb-15 bg-background min-h-screen">
                 <div className="mx-auto max-w-7xl">
                     {/* Main Content Grid */}
                     <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">

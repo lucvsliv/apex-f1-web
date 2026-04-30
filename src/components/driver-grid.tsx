@@ -103,13 +103,13 @@ export default function DriverGrid() {
             </Breadcrumb>
 
             {/* 그랑프리 년도 타이틀 */}
-            <div className="text-left p-15 pb-10">
+            <div className="text-left px-8 sm:pb-5 pt-10 sm:pt-15 pb-10">
                 <p className="text-xl" style={{ fontFamily: "'Formula 1', monospace" }}>FORMULA 1</p>
                 <h1 className="text-4xl font-bold">DRIVERS {year}</h1>
             </div>
 
             {/* 드라이버 아이템 리스트 */}
-            <div className="w-full pt-5 p-15 pb-15">
+            <div className="w-full pt-5 px-6 sm:pb-5 pb-5 sm:pb-15">
                 {isLoading ? (
                     <div className="flex justify-center py-20 text-gray-500">
                         Loading drivers...

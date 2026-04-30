@@ -26,10 +26,10 @@ export function ScheduleCard({ schedules }: { schedules: Schedule[] }) {
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <Select value={year} onValueChange={setYear}>
-                            <SelectTrigger className="w-[100px] text-sm">
+                            <SelectTrigger className="text-sm h-8 border-stone-200 bg-white shadow-sm font-medium focus:ring-0 w-[100px]">
                                 <SelectValue placeholder="Year" />
                             </SelectTrigger>
-                            <SelectContent className="border-gray-200">
+                            <SelectContent className="border-stone-200 bg-white">
                                 <SelectItem value="2025">2025</SelectItem>
                                 <SelectItem value="2024">2024</SelectItem>
                                 <SelectItem value="2023">2023</SelectItem>
@@ -40,20 +40,19 @@ export function ScheduleCard({ schedules }: { schedules: Schedule[] }) {
             </Breadcrumb>
 
             {/* 그랑프리 년도 정보 */}
-            <div className="text-left p-15 pb-10">
+            <div className="text-left px-8 sm:pb-5 pt-10 sm:pt-15 pb-10">
                 <p className="text-xl" style={{ fontFamily: "'Formula 1', monospace" }}>FORMULA 1</p>
                 <h1 className="text-4xl font-bold">GRAND PRIX {year}</h1>
             </div>
 
             {/* 일정 카드 */}
-            <div className="w-full pt-5 px-15 pb-15">
+            <div className="w-full pt-5 px-6 sm:pb-5 pb-5 sm:pb-15">
                 <div className="grid gap-6 grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                     {schedules.map((schedule, idx) => (
                         <Card
                             key={idx}
-                            className={`w-full rounded-xl border border-gray-200 shadow-sm hover:shadow-xl 
-                            transition-shadow duration-200
-                            ${schedule.isCurrent ? "shadow-[0_0_15px_3px_rgba(239,68,68,0.5)]" : ""} cursor-pointer`}
+                            className={`w-full rounded-xl border shadow-none transition-colors duration-200 cursor-pointer
+                            ${schedule.isCurrent ? "border-red-400 ring-1 ring-red-400 bg-red-50/10" : "border-stone-200 hover:border-stone-300"}`}
                             onClick={() => router.push(`/schedules/${schedule.countryCodeISO}`)}
                         >
                             {/* Card Header */}
@@ -62,9 +61,13 @@ export function ScheduleCard({ schedules }: { schedules: Schedule[] }) {
                                     <div className="flex items-center gap-2">
                                         <span className="font-semibold text-lg">{schedule.round}</span>
                                         {schedule.isCurrent && (
-                                            <span className="bg-red-500 text-white text-xs mx-1 px-2 py-0.5 rounded-full">
-                                                Upcoming
-                                            </span>
+                                            <div className="flex items-center gap-1.5 ml-1 px-2.5 py-0.5 bg-red-50 text-red-600 rounded-full border border-red-200">
+                                                <span className="relative flex h-1.5 w-1.5">
+                                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500"></span>
+                                                </span>
+                                                <span className="text-[10px] uppercase font-bold tracking-wider">Next Race</span>
+                                            </div>
                                         )}
                                     </div>
 

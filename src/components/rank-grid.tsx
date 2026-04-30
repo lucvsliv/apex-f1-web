@@ -147,12 +147,12 @@ export default function RankGrid() {
             </Breadcrumb>
 
             {/* 그랑프리 년도 타이틀 */}
-            <div className="text-left p-15 pb-10">
+            <div className="text-left px-8 sm:pb-5 pt-10 sm:pt-15 pb-10">
                 <p className="text-xl" style={{ fontFamily: "'Formula 1', monospace" }}>FORMULA 1</p>
                 <h1 className="text-4xl font-bold">RANKS {year}</h1>
             </div>
 
-            <div className="mx-15 pb-15">
+            <div className="mx-6 sm:pb-5 pb-5 sm:pb-15">
                 <Tabs defaultValue="drivers" className="w-full">
                     <TabsList className="mb-6">
                         <TabsTrigger value="drivers">Drivers Ranking</TabsTrigger>
@@ -160,10 +160,10 @@ export default function RankGrid() {
                     </TabsList>
                     
                     <TabsContent value="drivers">
-                        <div className="rounded-md border border-gray-200 overflow-hidden">
+                        <div className="rounded-md border border-stone-200 overflow-hidden">
                             <Table>
                                 <TableHeader className="bg-stone-100">
-                                    <TableRow>
+                                    <TableRow className="border-b-stone-200">
                                         <TableHead className="w-20">POS</TableHead>
                                         <TableHead>DRIVER</TableHead>
                                         <TableHead>TEAM</TableHead>
@@ -177,7 +177,7 @@ export default function RankGrid() {
                                         </TableRow>
                                     ) : (
                                         driverRanks.map((rank) => (
-                                            <TableRow key={rank.driverId} className="cursor-pointer hover:bg-stone-50 transition-colors">
+                                            <TableRow key={rank.driverId} className="cursor-pointer hover:bg-stone-50 transition-colors border-b-stone-200">
                                                 <TableCell className="font-bold" style={{ fontFamily: "'Formula 1', monospace" }}>
                                                     {rank.position}
                                                 </TableCell>
@@ -203,10 +203,10 @@ export default function RankGrid() {
                     </TabsContent>
 
                     <TabsContent value="teams">
-                        <div className="rounded-md border border-gray-200 overflow-hidden">
+                        <div className="rounded-md border border-stone-200 overflow-hidden">
                             <Table>
                                 <TableHeader className="bg-stone-100">
-                                    <TableRow>
+                                    <TableRow className="border-b-stone-200">
                                         <TableHead className="w-20">POS</TableHead>
                                         <TableHead>TEAM</TableHead>
                                         <TableHead className="text-right">PTS</TableHead>
@@ -219,7 +219,7 @@ export default function RankGrid() {
                                         </TableRow>
                                     ) : (
                                         teamRanks.map((rank) => (
-                                            <TableRow key={rank.teamId} className="cursor-pointer hover:bg-stone-50 transition-colors">
+                                            <TableRow key={rank.teamId} className="cursor-pointer hover:bg-stone-50 transition-colors border-b-stone-200">
                                                 <TableCell className="font-bold" style={{ fontFamily: "'Formula 1', monospace" }}>
                                                     {rank.position}
                                                 </TableCell>

@@ -17,6 +17,7 @@ export function SiteHeader() {
         "/dashboard/cars": "Cars",
         "/dashboard/ranks": "Ranks",
         "/dashboard/circuits": "Circuits",
+        "/dashboard/community": "Board",
         "/dashboard/store/product": "Products",
         "/dashboard/store/cart": "Cart",
         "/dashboard/store/checkout": "Checkout",
