@@ -32,7 +32,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # [최적화] Docker 레이어 캐싱 (Next.js 빌드 캐시 포함)
+      # [최적화] Docker 레이어 캐싱
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
         with:
@@ -62,32 +62,35 @@ jobs:
           envs: ENV_FILE_CONTENT
           script: |
             echo "[*] 프론트엔드 배포를 시작합니다..."
+            
+            echo "[*] 현재 서버 Public IP:"
+            curl -s ifconfig.me
+            echo ""
+
+            echo "[*] 내부 IP:"
+            hostname -I
+
+            echo "[*] hostname:"
+            hostname
+            
             cd ~/apex-f1-web
+
+            # 백엔드와 동일하게 Git으로 최신 상태 동기화 (docker-compose.yml 포함)
+            git fetch --all
+            git reset --hard origin/main
 
             echo "[*] .env 파일 생성 중..."
             echo "$ENV_FILE_CONTENT" > .env
 
             echo ${{ secrets.GHCR_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
+            # 특정 커밋 해시 대신 latest 태그 이미지를 Pull 받습니다
             echo "[*] 최신 프론트엔드 이미지를 Pull 받습니다..."
-            docker pull ghcr.io/${{ github.repository_owner }}/apex-f1-web:${{ github.sha }}
-
-            echo "[*] docker-compose.yml 파일 생성 중..."
-            cat << 'EOF' > docker-compose.yml
-services:
-  web:
-    image: ghcr.io/${{ github.repository_owner }}/apex-f1-web:${{ github.sha }}
-    container_name: apex-f1-web
-    ports:
-      - "3000:3000"
-    restart: unless-stopped
-    env_file:
-      - .env
-EOF
+            docker pull ghcr.io/${{ github.repository_owner }}/apex-f1-web:latest
 
             echo "[*] 도커 컨테이너를 다시 실행합니다..."
             docker compose down
-            docker compose up -d
+            docker compose --env-file .env up -d
 
             docker image prune -f
             echo "[*] 프론트엔드 자동 배포가 완료되었습니다 :)"
