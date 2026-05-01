@@ -30,6 +30,10 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+    
+      - name: Create .env file for build
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > .env
 
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
@@ -41,10 +45,6 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/apex-f1-web:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          build-args: |
-            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
-            NEXT_PUBLIC_KAKAO_JS_KEY=${{ secrets.NEXT_PUBLIC_KAKAO_JS_KEY }}
-            NEXT_PUBLIC_TOSS_CLIENT_KEY=${{ secrets.NEXT_PUBLIC_TOSS_CLIENT_KEY }}
 
   deploy:
     needs: build-and-push
