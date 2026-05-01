@@ -12,48 +12,38 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import * as React from "react";
 import { useRouter } from "next/navigation";
 
-const posts = [
-  {
-    id: 1,
-    title: "Welcome to the new board!",
-    author: "Admin",
-    date: "2024-04-30",
-    views: 128,
-    category: "Announcement",
-  },
-  {
-    id: 2,
-    title: "How to use the new AI Agent feature",
-    author: "John Doe",
-    date: "2024-04-29",
-    views: 256,
-    category: "Guide",
-  },
-  {
-    id: 3,
-    title: "Feedback on the latest race schedule",
-    author: "Jane Smith",
-    date: "2024-04-28",
-    views: 512,
-    category: "Feedback",
-  },
-  {
-    id: 4,
-    title: "Let's discuss the Miami Grand Prix",
-    author: "Peter Pan",
-    date: "2024-04-27",
-    views: 1024,
-    category: "Discussion",
-  },
-];
+import api from "@/lib/api/client";
+import { Post } from "@/types/post";
 
 export default function Board() {
   const router = useRouter();
   const [category, setCategory] = React.useState("All");
+  const [posts, setPosts] = React.useState<Post[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [mounted, setMounted] = React.useState(false);
 
+  React.useEffect(() => {
+    setMounted(true);
+    const fetchPosts = async () => {
+      try {
+        setIsLoading(true);
+        const response = await api.get("/posts");
+        setPosts(response.data);
+      } catch (error) {
+        console.error("게시글을 불러오는데 실패했습니다.", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchPosts();
+  }, []);
+
+  // 백엔드에서 카테고리 필드를 제공하지 않으므로, 임시로 필터링 로직은 비활성화하거나 
+  // 백엔드 데이터에 맞춰 조정이 필요합니다. 일단은 모든 글을 보여줍니다.
   const filteredPosts = category === "All" ? posts : posts.filter((p) => p.category === category);
 
   return (
@@ -69,18 +59,20 @@ export default function Board() {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger className="text-sm h-8 border-stone-200 bg-white shadow-sm font-medium focus:ring-0">
-                <SelectValue placeholder="Category" />
-              </SelectTrigger>
-              <SelectContent className="border-stone-200 bg-white">
-                <SelectItem value="All">All Boards</SelectItem>
-                <SelectItem value="Discussion">Discussion</SelectItem>
-                <SelectItem value="Feedback">Feedback</SelectItem>
-                <SelectItem value="Guide">Guide</SelectItem>
-                <SelectItem value="Announcement">Announcement</SelectItem>
-              </SelectContent>
-            </Select>
+            {mounted && (
+              <Select value={category} onValueChange={setCategory}>
+                <SelectTrigger className="text-sm h-8 border-stone-200 bg-white shadow-sm font-medium focus:ring-0">
+                  <SelectValue placeholder="Category" />
+                </SelectTrigger>
+                <SelectContent className="border-stone-200 bg-white">
+                  <SelectItem value="All">All Boards</SelectItem>
+                  <SelectItem value="Discussion">Discussion</SelectItem>
+                  <SelectItem value="Feedback">Feedback</SelectItem>
+                  <SelectItem value="Guide">Guide</SelectItem>
+                  <SelectItem value="Announcement">Announcement</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
@@ -93,41 +85,73 @@ export default function Board() {
           <Table>
             <TableHeader className="bg-muted/50">
               <TableRow className="border-stone-200">
-                <TableHead className="w-[80px] hidden sm:table-cell">ID</TableHead>
-                <TableHead>Title</TableHead>
-                <TableHead className="w-[150px] hidden sm:table-cell">Author</TableHead>
-                <TableHead className="w-[150px] hidden sm:table-cell">Date</TableHead>
-                <TableHead className="w-[100px] text-right hidden sm:table-cell">Views</TableHead>
+                <TableHead className="w-[80px] hidden sm:table-cell text-center">번호</TableHead>
+                <TableHead>제목</TableHead>
+                <TableHead className="w-[150px] hidden sm:table-cell">작성자</TableHead>
+                <TableHead className="w-[150px] hidden sm:table-cell">작성일</TableHead>
+                <TableHead className="w-[100px] text-right hidden sm:table-cell">조회수</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredPosts.map((post) => (
-                <TableRow
-                  key={post.id}
-                  className="border-t border-stone-200 cursor-pointer hover:bg-muted/50 transition-colors"
-                  onClick={() => router.push(`/dashboard/community/${post.id}`)}
-                >
-                  <TableCell className="font-medium hidden sm:table-cell">{post.id}</TableCell>
-                  <TableCell>
-                    <div className="flex flex-col">
-                      <div>
-                        <span className="font-medium text-sm sm:text-base">{post.title}</span>
-                        <Badge variant="outline" className="ml-2 hidden sm:inline-flex border-stone-200">{post.category}</Badge>
-                      </div>
-                      <div className="flex items-center text-xs text-muted-foreground sm:hidden gap-1.5 mt-1">
-                        <span>{post.category}</span>
-                        <span>•</span>
-                        <span>{post.author}</span>
-                        <span>•</span>
-                        <span>{post.date}</span>
-                      </div>
-                    </div>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="h-24 text-center">
+                    게시글을 불러오는 중입니다...
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell">{post.author}</TableCell>
-                  <TableCell className="hidden sm:table-cell">{post.date}</TableCell>
-                  <TableCell className="text-right hidden sm:table-cell">{post.views}</TableCell>
                 </TableRow>
-              ))}
+              ) : filteredPosts.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="h-24 text-center">
+                    등록된 게시글이 없습니다.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredPosts.map((post) => (
+                  <TableRow
+                    key={post.id}
+                    className="border-t border-stone-200 cursor-pointer hover:bg-muted/50 transition-colors"
+                    onClick={() => router.push(`/dashboard/community/${post.id}`)}
+                  >
+                    <TableCell className="hidden sm:table-cell text-center text-muted-foreground">{post.id}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <div>
+                          <span className="text-sm text-muted-foreground">{post.title}</span>
+                          {post.category && (
+                            <Badge variant="outline" className="ml-2 hidden sm:inline-flex border-stone-200 text-[10px] font-normal">{post.category}</Badge>
+                          )}
+                        </div>
+                        <div className="flex items-center text-[11px] text-muted-foreground sm:hidden gap-1.5 mt-1">
+                          <span>{post.category || "General"}</span>
+                          <span>•</span>
+                          <div className="flex items-center gap-1">
+                            <Avatar className="size-3.5">
+                              <AvatarImage src={post.authorProfileImageUrl} />
+                              <AvatarFallback className="text-[8px]">CN</AvatarFallback>
+                            </Avatar>
+                            <span>{post.authorNickname}</span>
+                          </div>
+                          <span>•</span>
+                          <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="hidden sm:table-cell text-muted-foreground">
+                      <div className="flex items-center gap-2">
+                        <Avatar className="size-5">
+                          <AvatarImage src={post.authorProfileImageUrl} />
+                          <AvatarFallback className="text-[10px]">CN</AvatarFallback>
+                        </Avatar>
+                        <span>{post.authorNickname}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="hidden sm:table-cell text-muted-foreground">
+                      {new Date(post.createdAt).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell className="text-right hidden sm:table-cell text-muted-foreground">{post.views || 0}</TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </div>
@@ -135,3 +159,4 @@ export default function Board() {
     </div>
   );
 }
+

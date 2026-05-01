@@ -79,7 +79,7 @@ export default function RankGrid() {
                 // In real scenario, we would call:
                 // const driverRes = await api.get(`/seasons/${year}/driver-ranks`);
                 // const teamRes = await api.get(`/seasons/${year}/team-ranks`);
-                
+
                 const mockDrivers: DriverRank[] = [
                     { position: 1, driverId: "max_verstappen", name: "Max Verstappen", team: "Red Bull Racing", points: 454 },
                     { position: 2, driverId: "lando_norris", name: "Lando Norris", team: "McLaren", points: 331 },
@@ -158,7 +158,7 @@ export default function RankGrid() {
                         <TabsTrigger value="drivers">Drivers Ranking</TabsTrigger>
                         <TabsTrigger value="teams">Teams Ranking</TabsTrigger>
                     </TabsList>
-                    
+
                     <TabsContent value="drivers">
                         <div className="rounded-md border border-stone-200 overflow-hidden">
                             <Table>
@@ -184,8 +184,8 @@ export default function RankGrid() {
                                                 <TableCell className="font-semibold">{rank.name}</TableCell>
                                                 <TableCell>
                                                     <div className="flex items-center gap-2">
-                                                        <div 
-                                                            className="w-1 h-4 rounded-full" 
+                                                        <div
+                                                            className="w-1 h-4 rounded-full"
                                                             style={{ backgroundColor: TEAM_COLORS[TEAM_DISPLAY_MAP[rank.team] || rank.team] || "#ccc" }}
                                                         />
                                                         {TEAM_DISPLAY_MAP[rank.team] || rank.team}
@@ -225,8 +225,8 @@ export default function RankGrid() {
                                                 </TableCell>
                                                 <TableCell>
                                                     <div className="flex items-center gap-2">
-                                                        <div 
-                                                            className="w-1 h-4 rounded-full" 
+                                                        <div
+                                                            className="w-1 h-4 rounded-full"
                                                             style={{ backgroundColor: TEAM_COLORS[TEAM_DISPLAY_MAP[rank.name] || rank.name] || "#ccc" }}
                                                         />
                                                         <span className="font-semibold">{rank.name}</span>

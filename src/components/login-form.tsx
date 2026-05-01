@@ -131,9 +131,9 @@ export function LoginForm({
                     <form className="p-6 md:p-8" onSubmit={handleSubmit}>
                         <FieldGroup>
                             <div className="flex flex-col items-center gap-2 text-center">
-                                <h1 className="text-2xl font-bold">Welcome back</h1>
+                                <h1 className="text-2xl font-bold">다시 오신 것을 환영합니다</h1>
                                 <p className="text-muted-foreground text-sm text-balance">
-                                    Login to your Apex F1 account
+                                    Apex F1 계정으로 로그인하세요
                                 </p>
                             </div>
 
@@ -145,7 +145,7 @@ export function LoginForm({
                             )}
 
                             <Field>
-                                <FieldLabel htmlFor="email">Email</FieldLabel>
+                                <FieldLabel htmlFor="email">이메일</FieldLabel>
                                 <Input
                                     id="email"
                                     type="email"
@@ -158,7 +158,7 @@ export function LoginForm({
                             </Field>
 
                             <Field>
-                                <FieldLabel htmlFor="password">Password</FieldLabel>
+                                <FieldLabel htmlFor="password">비밀번호</FieldLabel>
                                 <Input
                                     id="password"
                                     type="password"
@@ -173,19 +173,19 @@ export function LoginForm({
                                         href="#"
                                         className="text-sm underline-offset-2 hover:underline text-muted-foreground"
                                     >
-                                        Forgot your password?
+                                        비밀번호를 잊으셨나요?
                                     </a>
                                 </div>
                             </Field>
 
                             <Field>
                                 <Button type="submit" disabled={isLoading} className="w-full">
-                                    {isLoading ? "Logging in..." : "Login"}
+                                    {isLoading ? "로그인 중..." : "로그인"}
                                 </Button>
                             </Field>
 
                             <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
-                                Or continue with
+                                또는 다음 계정으로 계속하기
                             </FieldSeparator>
 
                             <Field className="grid grid-cols-3 gap-4">
@@ -195,7 +195,7 @@ export function LoginForm({
                                     onClick={handleKakaoLogin}
                                 >
                                     <img src="/icons/kakao.svg" alt="Kakao" className="w-4.5 h-4.5 object-contain" />
-                                    <span className="sr-only">Login with Kakao</span>
+                                    <span className="sr-only">카카오로 로그인</span>
                                 </Button>
                                 <Button
                                     className="bg-[#03C75A] hover:bg-[#02b350] border-transparent"
@@ -203,7 +203,7 @@ export function LoginForm({
                                     onClick={() => alert("네이버 로그인은 준비 중입니다!")}
                                 >
                                     <img src="/icons/naver.svg" alt="Naver" className="w-4 h-4 object-contain" />
-                                    <span className="sr-only">Login with Naver</span>
+                                    <span className="sr-only">네이버로 로그인</span>
                                 </Button>
                                 <Button
                                     className="bg-white hover:bg-gray-50 border border-gray-200"
@@ -211,12 +211,12 @@ export function LoginForm({
                                     onClick={() => alert("구글 로그인은 준비 중입니다!")}
                                 >
                                     <img src="/icons/google.svg" alt="Google" className="w-5 h-5 object-contain" />
-                                    <span className="sr-only">Login with Google</span>
+                                    <span className="sr-only">구글로 로그인</span>
                                 </Button>
                             </Field>
 
                             <FieldDescription className="text-center">
-                                Don't have an account? <a href="/signup" className="underline underline-offset-4">Sign up</a>
+                                계정이 없으신가요? <a href="/signup" className="underline underline-offset-4">회원가입</a>
                             </FieldDescription>
                         </FieldGroup>
                     </form>
