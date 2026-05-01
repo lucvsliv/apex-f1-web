@@ -85,16 +85,25 @@ export function SignupForm({
         }
     };
 
-    const handleSendOtp = () => {
+    const handleSendOtp = async () => {
         if (!formData.email) return;
-        setOtpStatus("sent");
-        alert("인증번호가 이메일로 전송되었습니다. (테스트용: 123456)");
+        try {
+            await api.post("/auth/email/send", { email: formData.email });
+            setOtpStatus("sent");
+        } catch (error) {
+            console.error("이메일 발송 에러:", error);
+            alert("이메일 발송에 실패했습니다. 이메일 형식을 확인해 주세요.");
+        }
     };
 
-    const handleVerifyOtp = () => {
-        if (otp === "123456") {
+    const handleVerifyOtp = async () => {
+        try {
+            await api.post("/auth/email/verify", { 
+                email: formData.email, 
+                otp: otp 
+            });
             setOtpStatus("verified");
-        } else {
+        } catch (error) {
             setOtpStatus("error");
         }
     };
@@ -234,9 +243,9 @@ export function SignupForm({
                         <form className="p-6 md:p-8 flex flex-col justify-center" onSubmit={handleSubmit}>
                             <FieldGroup>
                                 <div className="flex flex-col items-center gap-2 text-center">
-                                    <h1 className="text-2xl font-bold">Create your account</h1>
+                                    <h1 className="text-2xl font-bold">계정 만들기</h1>
                                     <p className="text-muted-foreground text-sm text-balance">
-                                        Join Apex F1 Agent and explore the data
+                                        Apex F1 Agent에 가입하고 데이터를 탐색하세요
                                     </p>
                                 </div>
 
@@ -246,18 +255,14 @@ export function SignupForm({
                                     </div>
                                 )}
 
-                                {/* 닉네임 필드 & 중복확인 버튼 */}
                                 <Field>
-                                    <FieldLabel htmlFor="nickname">Nickname</FieldLabel>
-                                    {/* items-start를 주어 에러 메시지가 떠도 버튼이 위쪽에 고정되게 합니다 */}
+                                    <FieldLabel htmlFor="nickname">닉네임</FieldLabel>
                                     <div className="flex gap-2 items-start">
-
-                                        {/* 💡 Input과 메시지를 하나의 묶음으로 묶습니다 */}
                                         <div className="flex-1 flex flex-col gap-1">
                                             <Input
                                                 id="nickname"
                                                 type="text"
-                                                placeholder="Type your name"
+                                                placeholder="닉네임을 입력하세요"
                                                 required
                                                 value={formData.nickname}
                                                 onChange={handleChange}
@@ -267,12 +272,10 @@ export function SignupForm({
                                                     nicknameStatus === "duplicate" && "border-red-400 focus-visible:ring-red-400"
                                                 )}
                                             />
-                                            {/* Input 바로 밑에 메시지 배치 */}
                                             {nicknameStatus === "available" && <span className="text-xs font-medium text-blue-400">사용 가능한 닉네임입니다.</span>}
                                             {nicknameStatus === "duplicate" && <span className="text-xs font-medium text-red-400">이미 사용 중인 닉네임입니다.</span>}
                                         </div>
 
-                                        {/* 💡 Button의 className에 동적 스타일링(cn) 적용 */}
                                         <Button
                                             type="button"
                                             variant="outline"
@@ -280,15 +283,12 @@ export function SignupForm({
                                             disabled={!formData.nickname || nicknameStatus === "checking" || nicknameStatus === "available"}
                                             className={cn(
                                                 "shrink-0 transition-colors",
-                                                // 1. 기본 상태 (입력 중이거나 아무것도 안 했을 때)
                                                 (nicknameStatus === "idle" || nicknameStatus === "checking") &&
                                                 "border-stone-300 text-stone-500 hover:bg-stone-100 hover:text-stone-800",
 
-                                                // 2. 중복일 때 (Input의 붉은 테두리와 깔맞춤)
                                                 nicknameStatus === "duplicate" &&
                                                 "border-red-400 text-red-400 border-stone-300 text-stone-500",
 
-                                                // 3. 사용 가능할 때 (버튼이 disabled 되면서 자연스럽게 파란색 유지)
                                                 nicknameStatus === "available" &&
                                                 "border-blue-400 text-blue-400 border-stone-300 text-stone-500"
                                             )}
@@ -299,19 +299,16 @@ export function SignupForm({
                                 </Field>
 
                                 <Field>
-                                    <FieldLabel>Profile Image</FieldLabel>
+                                    <FieldLabel>프로필 이미지</FieldLabel>
                                     <div className="flex gap-8 items-end mt-2">
 
-                                        {/* 기본 프로필 이미지 */}
                                         <div className="flex flex-col items-center gap-2">
                                             <button
                                                 type="button"
                                                 onClick={() => handleAvatarSelect(presetAvatar)}
                                                 className={cn(
                                                     "w-16 h-16 rounded-full border-2 overflow-hidden transition-all hover:scale-105",
-                                                    // 💡 1. 여기에 선택 안 되었을 때 흐려지는 효과(opacity)를 추가합니다!
                                                     formData.profileImageUrl !== presetAvatar && "opacity-40 grayscale-[30%] hover:opacity-100",
-                                                    // (기존 선택 스타일 유지)
                                                     formData.profileImageUrl === presetAvatar
                                                         ? "border-stone-400 ring-2 ring-stone-200"
                                                         : "border-stone-200 hover:border-stone-300"
@@ -323,11 +320,10 @@ export function SignupForm({
                                                 "text-xs font-medium transition-colors",
                                                 formData.profileImageUrl === presetAvatar ? "text-stone-500" : "text-stone-300"
                                             )}>
-                                                Default
+                                                기본
                                             </span>
                                         </div>
 
-                                        {/* 랜덤 프로필 이미지 */}
                                         <div className="flex flex-col items-center gap-2">
                                             <div className="relative">
                                                 <button
@@ -359,11 +355,10 @@ export function SignupForm({
                                                 "text-xs font-medium transition-colors",
                                                 formData.profileImageUrl === randomAvatar ? "text-stone-500" : "text-stone-300"
                                             )}>
-                                                Random
+                                                랜덤
                                             </span>
                                         </div>
 
-                                        {/* 사용자 업로드 프로필 이미지 */}
                                         <div className="flex flex-col items-center gap-2">
                                             <div className="relative">
                                                 <button
@@ -375,7 +370,6 @@ export function SignupForm({
                                                             ? "border-dashed border-stone-300 bg-stone-50 cursor-default"
                                                             : "hover:scale-105",
                                                         uploadAvatar && formData.profileImageUrl !== uploadAvatar && "opacity-40 grayscale-[30%] hover:opacity-100",
-                                                        // (기존 선택 스타일 유지)
                                                         uploadAvatar && formData.profileImageUrl === uploadAvatar
                                                             ? "border-stone-400 ring-2 ring-stone-200"
                                                             : (uploadAvatar ? "border-stone-200 hover:border-stone-300" : "")
@@ -407,14 +401,14 @@ export function SignupForm({
                                                 "text-xs font-medium transition-colors",
                                                 formData.profileImageUrl === uploadAvatar ? "text-stone-500" : "text-stone-300"
                                             )}>
-                                                Upload
+                                                업로드
                                             </span>
                                         </div>
                                     </div>
                                 </Field>
 
                                 <Field>
-                                    <FieldLabel htmlFor="email">Email</FieldLabel>
+                                    <FieldLabel htmlFor="email">이메일</FieldLabel>
                                     <div className="flex gap-2 items-start">
                                         <Input
                                             id="email"
@@ -488,20 +482,19 @@ export function SignupForm({
                                 <Field>
                                     <Field className="grid grid-cols-2 gap-4">
                                         <Field>
-                                            <FieldLabel htmlFor="password">Password</FieldLabel>
+                                            <FieldLabel htmlFor="password">비밀번호</FieldLabel>
                                             <Input
                                                 id="password"
                                                 type="password"
                                                 required
                                                 value={formData.password}
                                                 onChange={handleChange}
-                                                // 💡 메인 비밀번호는 일치 여부에 따른 색상 변화를 제거했습니다.
                                                 className={cn(isPasswordTooShort && "border-red-400 focus-visible:ring-red-400")}
                                             />
                                         </Field>
                                         <Field>
                                             <FieldLabel htmlFor="confirmPassword">
-                                                Confirm Password
+                                                비밀번호 확인
                                             </FieldLabel>
                                             <Input
                                                 id="confirmPassword"
@@ -509,7 +502,6 @@ export function SignupForm({
                                                 required
                                                 value={formData.confirmPassword}
                                                 onChange={handleChange}
-                                                // 💡 Confirm 창에만 붉은색/파란색 테두리 피드백 적용!
                                                 className={cn(
                                                     isPasswordMismatch && "border-red-400 focus-visible:ring-red-400",
                                                     isPasswordMatchSuccess && "border-blue-400 focus-visible:ring-blue-400"
@@ -529,7 +521,7 @@ export function SignupForm({
                                             <span className="text-xs font-medium text-blue-400">비밀번호가 안전하게 일치합니다.</span>
                                         )}
                                         {!isPasswordTooShort && !isPasswordMismatch && !isPasswordMatchSuccess && (
-                                            <FieldDescription>Must be at least 8 characters long.</FieldDescription>
+                                            <FieldDescription>최소 8자 이상이어야 합니다.</FieldDescription>
                                         )}
                                     </div>
                                 </Field>
@@ -540,11 +532,11 @@ export function SignupForm({
                                         disabled={isLoading || isPasswordTooShort || isPasswordMismatch || nicknameStatus !== "available" || otpStatus !== "verified"}
                                         className="w-full"
                                     >
-                                        {isLoading ? "Creating Account..." : "Create Account"}
+                                        {isLoading ? "계정 생성 중..." : "계정 생성"}
                                     </Button>
                                 </Field>
                                 <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
-                                    Or continue with
+                                    또는 다음 계정으로 계속하기
                                 </FieldSeparator>
                                 <Field className="grid grid-cols-3 gap-4">
                                     <Button
@@ -553,7 +545,7 @@ export function SignupForm({
                                         onClick={handleKakaoLogin}
                                     >
                                         <img src="/icons/kakao.svg" alt="Kakao" className="w-4.5 h-4.5 object-contain" />
-                                        <span className="sr-only">Login with Kakao</span>
+                                        <span className="sr-only">카카오로 로그인</span>
                                     </Button>
                                     <Button
                                         className="bg-[#03C75A] hover:bg-[#02b350] border-transparent"
@@ -561,7 +553,7 @@ export function SignupForm({
                                         onClick={() => alert("네이버 로그인은 준비 중입니다!")}
                                     >
                                         <img src="/icons/naver.svg" alt="Naver" className="w-4 h-4 object-contain" />
-                                        <span className="sr-only">Login with Naver</span>
+                                        <span className="sr-only">네이버로 로그인</span>
                                     </Button>
                                     <Button
                                         className="bg-white hover:bg-stone-50 border border-stone-200"
@@ -569,17 +561,16 @@ export function SignupForm({
                                         onClick={() => alert("구글 로그인은 준비 중입니다!")}
                                     >
                                         <img src="/icons/google.svg" alt="Google" className="w-5 h-5 object-contain" />
-                                        <span className="sr-only">Login with Google</span>
+                                        <span className="sr-only">구글로 로그인</span>
                                     </Button>
                                 </Field>
                                 <FieldDescription className="text-center">
-                                    Already have an account? <a href="/login">Sign in</a>
+                                    이미 계정이 있으신가요? <a href="/login">로그인</a>
                                 </FieldDescription>
                             </FieldGroup>
                         </form>
                     )}
 
-                    {/* 오른쪽 이미지 영역 */}
                     <div className="relative hidden md:block bg-stone-200">
                         <img
                             src="/logo/apex-f1-logo.png"
@@ -590,8 +581,7 @@ export function SignupForm({
                 </CardContent>
             </Card>
             <FieldDescription className="px-6 text-center">
-                By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-                and <a href="#">Privacy Policy</a>.
+                계속하기를 클릭하면 <a href="#">서비스 이용약관</a> 및 <a href="#">개인정보 처리방침</a>에 동의하게 됩니다.
             </FieldDescription>
         </div>
     );

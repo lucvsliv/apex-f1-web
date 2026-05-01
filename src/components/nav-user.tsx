@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
     IconCreditCard,
     IconDotsVertical,
@@ -36,19 +36,24 @@ import {
 } from "@/components/ui/sidebar"
 
 export function NavUser({
-                            user,
-                        }: {
+    user,
+}: {
     user: {
         nickname: string
         email: string
-        profileImageUrl: string
+        profileImageUrl?: string
     }
 }) {
     const { isMobile, setOpenMobile } = useSidebar()
     const router = useRouter()
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => {
+        setMounted(true)
+    }, [])
 
     const { user: fullUser, clearUser } = useUserStore()
-    const isGuest = user.nickname === "Guest"
+    const isGuest = user.nickname === "게스트" || user.nickname === "로딩 중..."
 
     const handleLogout = () => {
         localStorage.removeItem("apex_access_token")
@@ -61,7 +66,6 @@ export function NavUser({
         router.push("/login")
     }
 
-    // TODO: 멤버십 등급에 따른 옵션 정보 API 호출 필요
     const getTierDetails = (tier?: string) => {
         switch (tier) {
             case "PADDOCK": return { name: "PADDOCK", limit: "일일 50회", color: "text-blue-600 font-semibold" }
@@ -72,6 +76,22 @@ export function NavUser({
     }
 
     const currentTier = getTierDetails(fullUser?.tier)
+
+    if (!mounted) {
+        return (
+            <SidebarMenu>
+                <SidebarMenuItem>
+                    <SidebarMenuButton size="lg" disabled>
+                        <div className="size-8 rounded-lg bg-muted animate-pulse" />
+                        <div className="grid flex-1 gap-1">
+                            <div className="h-3 w-20 bg-muted animate-pulse rounded" />
+                            <div className="h-2 w-24 bg-muted animate-pulse rounded" />
+                        </div>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+            </SidebarMenu>
+        )
+    }
 
     return (
         <>
@@ -131,7 +151,7 @@ export function NavUser({
                                     disabled={isGuest}
                                 >
                                     <IconUserCircle className="mr-2 size-4" />
-                                    Account
+                                    계정 정보
                                 </DropdownMenuItem>
 
                                 {/* Membership */}
@@ -143,13 +163,13 @@ export function NavUser({
                                     className="cursor-pointer"
                                 >
                                     <IconCarambola className="mr-2 size-4" />
-                                    Membership
+                                    멤버십
                                 </DropdownMenuItem>
 
                                 {/* Notifications는 그대로 유지 */}
                                 <DropdownMenuItem disabled={isGuest} className={!isGuest ? "cursor-pointer" : ""}>
                                     <IconNotification className="mr-2 size-4" />
-                                    Notifications
+                                    알림
                                 </DropdownMenuItem>
                             </DropdownMenuGroup>
 
@@ -159,12 +179,12 @@ export function NavUser({
                             {isGuest ? (
                                 <DropdownMenuItem onClick={handleLogin} className="cursor-pointer text-blue-600 focus:text-blue-700 focus:bg-blue-50">
                                     <IconLogin className="mr-2 size-4" />
-                                    Log in
+                                    로그인
                                 </DropdownMenuItem>
                             ) : (
                                 <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600 focus:text-red-700 focus:bg-red-50">
                                     <IconLogout className="mr-2 size-4" />
-                                    Log out
+                                    로그아웃
                                 </DropdownMenuItem>
                             )}
                         </DropdownMenuContent>

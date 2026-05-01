@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
     output: "standalone",
+    devIndicators: false,
 
     // F1 공식 이미지 서버 도메인 허용 추가
     images: {

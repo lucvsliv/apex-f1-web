@@ -16,7 +16,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useProductStore } from "@/store/useProductStore";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useRouter, usePathname } from "next/navigation";
 import * as React from "react";
 
@@ -280,11 +280,10 @@ export function GoodsProduct() {
                                                             {[...Array(5)].map((_, i) => (
                                                                 <Star
                                                                     key={i}
-                                                                    className={`h-3 w-3 ${
-                                                                        i < Math.floor(product.rating || 0)
+                                                                    className={`h-3 w-3 ${i < Math.floor(product.rating || 0)
                                                                             ? "fill-yellow-400 text-yellow-400"
                                                                             : "text-gray-300"
-                                                                    }`}
+                                                                        }`}
                                                                 />
                                                             ))}
                                                         </div>

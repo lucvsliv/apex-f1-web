@@ -12,7 +12,7 @@ import {
     BreadcrumbList,
     BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function CircuitGrid() {
     const [selectedCircuitId, setSelectedCircuitId] = React.useState<number | null>(null);
@@ -75,7 +75,7 @@ export default function CircuitGrid() {
                                     <img
                                         src={`https://flagcdn.com/w2560/${circuit.countryCodeISO.toLowerCase()}.png`}
                                         className="inline-block h-4 w-6 rounded-[0.175rem]"
-                                        alt={circuit.countryCodeISO}/>
+                                        alt={circuit.countryCodeISO} />
                                 </div>
                             </CardHeader>
 

@@ -10,16 +10,34 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, Save, X } from "lucide-react";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
+import api from "@/lib/api/client";
+import { toast } from "sonner";
+
 export default function BoardNewPost() {
     const router = useRouter();
+    const [title, setTitle] = React.useState("");
+    const [content, setContent] = React.useState("");
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Here we would normally make an API call to save the post.
-        // For now, just navigate back to the board after a short delay to simulate saving.
-        setTimeout(() => {
+        if (isSubmitting) return;
+
+        try {
+            setIsSubmitting(true);
+            await api.post("/posts", {
+                title,
+                content
+            });
+            toast.success("게시글이 성공적으로 등록되었습니다.");
             router.push("/dashboard/community");
-        }, 150);
+            router.refresh();
+        } catch (error) {
+            console.error("게시글 등록 실패:", error);
+            toast.error("게시글 등록에 실패했습니다. 다시 시도해주세요.");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -76,7 +94,10 @@ export default function BoardNewPost() {
                                 id="title" 
                                 placeholder="Enter a descriptive title for your post" 
                                 className="bg-white border-stone-200"
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
                                 required
+                                disabled={isSubmitting}
                             />
                         </div>
 
@@ -86,7 +107,10 @@ export default function BoardNewPost() {
                                 id="content" 
                                 placeholder="Write your post content here..." 
                                 className="min-h-[300px] bg-white border-stone-200 resize-y"
+                                value={content}
+                                onChange={(e) => setContent(e.target.value)}
                                 required
+                                disabled={isSubmitting}
                             />
                         </div>
                     </div>
@@ -96,9 +120,9 @@ export default function BoardNewPost() {
                             <X className="mr-2 h-4 w-4" />
                             Cancel
                         </Button>
-                        <Button type="submit" className="bg-stone-900 text-white hover:bg-stone-800">
+                        <Button type="submit" className="bg-stone-900 text-white hover:bg-stone-800" disabled={isSubmitting}>
                             <Save className="mr-2 h-4 w-4" />
-                            Publish Post
+                            {isSubmitting ? "Publishing..." : "Publish Post"}
                         </Button>
                     </div>
                 </form>

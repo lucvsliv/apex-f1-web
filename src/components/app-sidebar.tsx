@@ -15,30 +15,30 @@ import { IconBorderCornerPill, IconCar4wd, IconHelmet, IconCalendarEvent, } from
 import { useUserStore } from "@/store/useUserStore"
 
 const data = {
-    logo: { name: "Apex F1", url: "/dashboard", icon: "/icons/logo.svg",},
+    logo: { name: "Apex F1", url: "/dashboard", icon: "/icons/logo.svg", },
 
     aiAgent: [
-        { title: "Apex Agent", url: "/dashboard/agent/chat", icon: Sparkles,},
+        { title: "Apex 에이전트", url: "/dashboard/agent/chat", icon: Sparkles, },
     ],
 
     navMain: [
-        { title: "Schedules", url: "/dashboard/schedules", icon: IconCalendarEvent },
-        { title: "Results", url: "/dashboard/results", icon: Timer },
-        { title: "Teams", url: "/dashboard/teams", icon: Shell },
-        { title: "Drivers", url: "/dashboard/drivers", icon: IconHelmet },
-        { title: "Cars", url: "/dashboard/cars", icon: IconCar4wd },
-        { title: "Ranks", url: "/dashboard/ranks", icon: Trophy },
-        { title: "Circuits", url: "/dashboard/circuits", icon: LineSquiggle },
+        { title: "경기 일정", url: "/dashboard/schedules", icon: IconCalendarEvent },
+        { title: "경기 결과", url: "/dashboard/results", icon: Timer },
+        { title: "팀 정보", url: "/dashboard/teams", icon: Shell },
+        { title: "드라이버", url: "/dashboard/drivers", icon: IconHelmet },
+        { title: "레이스카", url: "/dashboard/cars", icon: IconCar4wd },
+        { title: "랭킹", url: "/dashboard/ranks", icon: Trophy },
+        { title: "서킷 정보", url: "/dashboard/circuits", icon: LineSquiggle },
     ],
 
     originalGoods: [
-        { title: "Products", url: "/dashboard/store/product", icon: Store },
-        { title: "Cart", url: "/dashboard/store/cart", icon: ShoppingCart },
-        { title: "Checkout", url: "/dashboard/store/checkout", icon: CreditCard },
+        { title: "상품 목록", url: "/dashboard/store/product", icon: Store },
+        { title: "장바구니", url: "/dashboard/store/cart", icon: ShoppingCart },
+        { title: "결제하기", url: "/dashboard/store/checkout", icon: CreditCard },
     ],
 
     community: [
-        { title: "Board", url: "/dashboard/community", icon: MessageSquare },
+        { title: "자유게시판", url: "/dashboard/community", icon: MessageSquare },
     ],
 
     // projects: [
@@ -56,8 +56,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     }, [fetchUser]);
 
     const displayUser = {
-        nickname: user?.nickname ?? (isLoading ? "Loading..." : "Guest"),
-        email: user?.email ?? (isLoading ? "Please wait" : "Please sign in"),
+        nickname: user?.nickname ?? (isLoading ? "로딩 중..." : "게스트"),
+        email: user?.email ?? (isLoading ? "잠시만 기다려 주세요" : "로그인이 필요합니다"),
         profileImageUrl: user?.profileImageUrl ?? "/avatars/default.svg",
     };
 
@@ -67,13 +67,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <ServiceLogo logo={data.logo} />
             </SidebarHeader>
             <SidebarContent>
-                <NavMain label="Apex AI" items={data.aiAgent} />
-                <NavMain label="Dataground" items={data.navMain} />
-                <NavMain label="Original Goods" items={data.originalGoods} />
-                <NavMain label="Community" items={data.community} />
+                <NavMain label="Apex AI 에이전트" items={data.aiAgent} />
+                <NavMain label="데이터 분석" items={data.navMain} />
+                <NavMain label="굿즈 샵" items={data.originalGoods} />
+                <NavMain label="커뮤니티" items={data.community} />
             </SidebarContent>
             <SidebarFooter>
-                <NavUser user={displayUser}/>
+                <NavUser user={displayUser} />
             </SidebarFooter>
             <SidebarRail />
         </Sidebar>
