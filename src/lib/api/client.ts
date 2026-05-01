@@ -7,6 +7,7 @@ const api = axios.create({
         "Content-Type": "application/json",
     },
 });
+console.log("Axios baseURL 최종 설정값:", api.defaults.baseURL);
 
 // 2. Request Interceptor (요청을 보내기 직전에 가로챔)
 api.interceptors.request.use(
