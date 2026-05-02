@@ -207,38 +207,40 @@ export default function DataChat() {
                                         <p className="text-sm font-semibold">{msg.role === "assistant" ? "Apex Assistant" : displayNickname}</p>
                                         <div className={`text-base leading-relaxed text-foreground/90 ${msg.role === "assistant" ? "markdown-body" : "whitespace-pre-wrap"}`}>
                                             {msg.role === "assistant" ? (
-                                                <ReactMarkdown
-                                                    remarkPlugins={[remarkGfm]}
-                                                    rehypePlugins={[rehypeRaw]}
-                                                    components={{
-                                                        h1: ({ ...props }) => <h1 className="text-2xl font-bold mb-4 mt-6" {...props} />,
-                                                        h2: ({ ...props }) => <h2 className="text-xl font-bold mb-3 mt-5" {...props} />,
-                                                        h3: ({ ...props }) => <h3 className="text-lg font-bold mb-2 mt-4" {...props} />,
-                                                        p: ({ ...props }) => <p className="mb-4 last:mb-0" {...props} />,
-                                                        ul: ({ ...props }) => <ul className="list-disc pl-6 mb-4 space-y-1" {...props} />,
-                                                        ol: ({ ...props }) => <ol className="list-decimal pl-6 mb-4 space-y-1" {...props} />,
-                                                        li: ({ ...props }) => <li className="mb-1" {...props} />,
-                                                        code: ({ ...props }) => (
-                                                            <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono" {...props} />
-                                                        ),
-                                                        pre: ({ ...props }) => (
-                                                            <pre className="bg-muted p-4 rounded-xl overflow-x-auto my-4 border border-stone-200" {...props} />
-                                                        ),
-                                                        blockquote: ({ ...props }) => (
-                                                            <blockquote className="border-l-4 border-primary/30 pl-4 italic my-4 text-muted-foreground" {...props} />
-                                                        ),
-                                                        table: ({ ...props }) => (
-                                                            <div className="overflow-x-auto my-6 border border-stone-200 rounded-xl">
-                                                                <table className="w-full text-sm border-collapse" {...props} />
-                                                            </div>
-                                                        ),
-                                                        thead: ({ ...props }) => <thead className="bg-stone-50" {...props} />,
-                                                        th: ({ ...props }) => <th className="px-4 py-2 border-b border-stone-200 font-semibold text-left" {...props} />,
-                                                        td: ({ ...props }) => <td className="px-4 py-2 border-b border-stone-100" {...props} />,
-                                                    }}
-                                                >
-                                                    {msg.content}
-                                                </ReactMarkdown>
+                                                <div className="space-y-4">
+                                                    <ReactMarkdown
+                                                        remarkPlugins={[remarkGfm]}
+                                                        rehypePlugins={[rehypeRaw]}
+                                                        components={{
+                                                            h1: ({ ...props }) => <h1 className="text-2xl font-bold mb-4 mt-6" {...props} />,
+                                                            h2: ({ ...props }) => <h2 className="text-xl font-bold mb-3 mt-5" {...props} />,
+                                                            h3: ({ ...props }) => <h3 className="text-lg font-bold mb-2 mt-4" {...props} />,
+                                                            p: ({ ...props }) => <p className="mb-4 last:mb-0" {...props} />,
+                                                            ul: ({ ...props }) => <ul className="list-disc pl-6 mb-4 space-y-1" {...props} />,
+                                                            ol: ({ ...props }) => <ol className="list-decimal pl-6 mb-4 space-y-1" {...props} />,
+                                                            li: ({ ...props }) => <li className="mb-1" {...props} />,
+                                                            code: ({ ...props }) => (
+                                                                <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono" {...props} />
+                                                            ),
+                                                            pre: ({ ...props }) => (
+                                                                <pre className="bg-muted p-4 rounded-xl overflow-x-auto my-4 border border-stone-200" {...props} />
+                                                            ),
+                                                            blockquote: ({ ...props }) => (
+                                                                <blockquote className="border-l-4 border-primary/30 pl-4 italic my-4 text-muted-foreground" {...props} />
+                                                            ),
+                                                            table: ({ ...props }) => (
+                                                                <div className="overflow-x-auto my-6 border border-stone-200 rounded-xl">
+                                                                    <table className="w-full text-sm border-collapse" {...props} />
+                                                                </div>
+                                                            ),
+                                                            thead: ({ ...props }) => <thead className="bg-stone-50" {...props} />,
+                                                            th: ({ ...props }) => <th className="px-4 py-2 border-b border-stone-200 font-semibold text-left" {...props} />,
+                                                            td: ({ ...props }) => <td className="px-4 py-2 border-b border-stone-100" {...props} />,
+                                                        }}
+                                                    >
+                                                        {msg.content}
+                                                    </ReactMarkdown>
+                                                </div>
                                             ) : (
                                                 msg.content
                                             )}
