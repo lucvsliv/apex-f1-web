@@ -8,12 +8,15 @@ import { useAgentStore, type ChatMessage } from "@/store/useAgentStore"
 import { Sparkles, User, Loader2 } from "lucide-react"
 import { PostDraftCard } from "@/components/agent/cards/post-draft-card"
 import { ProductCheckoutCard } from "@/components/agent/cards/product-checkout-card"
+import { TossPaymentButton } from "@/components/chat/toss-payment-button"
+import { useUserStore } from "@/store/useUserStore"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import rehypeRaw from "rehype-raw"
 
 function ChatBubble({ message }: { message: ChatMessage }) {
     const isAgent = message.role === "agent"
+    const { user } = useUserStore()
 
     // Action Card 렌더링
     if (message.actionType === "post_action" && message.actionPayload) {
@@ -35,6 +38,29 @@ function ChatBubble({ message }: { message: ChatMessage }) {
                 <div className="max-w-[85%]">
                     <p className="text-xs text-muted-foreground mb-1.5">Apex Agent</p>
                     <ProductCheckoutCard payload={message.actionPayload} />
+                </div>
+            </div>
+        )
+    }
+
+    if (message.actionType === "toss_payment" && message.actionPayload) {
+        return (
+            <div className="flex gap-3 justify-start">
+                <AgentAvatar />
+                <div className="max-w-[85%]">
+                    <p className="text-xs text-muted-foreground mb-1.5">Apex Agent</p>
+                    {message.content && (
+                        <div className="bg-muted rounded-2xl rounded-tl-sm px-4 py-2.5 text-sm leading-relaxed mb-2">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}
+                                components={{
+                                    p: ({ ...props }) => <p className="mb-2 last:mb-0" {...props} />,
+                                }}
+                            >
+                                {message.content}
+                            </ReactMarkdown>
+                        </div>
+                    )}
+                    <TossPaymentButton tier={message.actionPayload.tier} userEmail={user?.email || ""} />
                 </div>
             </div>
         )
