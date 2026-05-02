@@ -17,6 +17,7 @@ interface UserStore {
     user: User | null;
     isLoading: boolean;
     fetchUser: () => Promise<void>;
+    setUser: (user: User) => void;
     clearUser: () => void;
 }
 
@@ -37,6 +38,9 @@ export const useUserStore = create<UserStore>((set) => ({
             set({ user: null, isLoading: false });
         }
     },
+
+    // 유저 정보를 수동으로 업데이트하는 함수
+    setUser: (user: User) => set({ user }),
 
     // 로그아웃 시 유저 정보 초기화
     clearUser: () => set({ user: null, isLoading: false }),

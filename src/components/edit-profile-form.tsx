@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Loader2, Dices, Upload, User } from "lucide-react";
 import api from "@/lib/api/client";
 import { cn } from "@/lib/utils";
+import { useUserStore } from "@/store/useUserStore";
 
 interface UserData {
     nickname: string;
@@ -20,6 +21,7 @@ interface UserData {
 export default function EditProfileForm() {
     const router = useRouter();
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const { setUser } = useUserStore();
 
     const [isLoading, setIsLoading] = useState(false);
     const [isFetching, setIsFetching] = useState(true);
@@ -136,11 +138,17 @@ export default function EditProfileForm() {
         setIsLoading(true);
 
         try {
-            await api.put("/users/me", {
+            const response = await api.put("/users/me", {
                 nickname: formData.nickname,
                 profileImageUrl: formData.profileImageUrl
             });
 
+            // 💡 글로벌 상태 업데이트 (사이드바, 헤더 등에 즉시 반영)
+            if (response.data) {
+                setUser(response.data);
+            }
+
+            alert("프로필이 성공적으로 수정되었습니다.");
             router.push("/dashboard/profile");
             router.refresh();
         } catch (error) {
