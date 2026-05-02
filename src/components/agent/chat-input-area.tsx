@@ -74,6 +74,20 @@ export function ChatInputArea() {
                     return;
                 } catch (e) { console.error("JSON parse error", e); }
             }
+
+            // [ACTION_TOSS_PAYMENT:TIER] 패턴 파싱
+            const tossPaymentMatch = text.match(/\[ACTION_TOSS_PAYMENT:(.*?)\]/);
+            if (tossPaymentMatch) {
+                const tier = tossPaymentMatch[1];
+                const cleanText = text.replace(tossPaymentMatch[0], "").trim();
+                addMessage({
+                    role: "agent",
+                    content: cleanText || `${tier} 멤버십 결제를 진행해주세요.`,
+                    actionType: "toss_payment",
+                    actionPayload: { tier }
+                });
+                return;
+            }
             
             addMessage({
                 role: "agent",

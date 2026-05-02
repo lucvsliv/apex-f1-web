@@ -23,8 +23,9 @@ export function AgentChatSheet() {
     return (
         <div
             className={cn(
-                "fixed bottom-24 right-6 z-50",
-                "w-[400px] h-[600px]",
+                "fixed bottom-20 right-4 md:bottom-24 md:right-6 z-50",
+                "w-[calc(100vw-2rem)] md:w-[400px]",
+                "h-[calc(100dvh-7rem)] md:h-[600px] max-h-[600px]",
                 "bg-background border border-stone-200 rounded-2xl shadow-2xl shadow-black/10",
                 "flex flex-col overflow-hidden",
                 "transition-all duration-300 ease-out origin-bottom-right",

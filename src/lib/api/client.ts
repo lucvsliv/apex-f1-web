@@ -12,6 +12,11 @@ console.log("Axios baseURL 최종 설정값:", api.defaults.baseURL);
 // 2. Request Interceptor (요청을 보내기 직전에 가로챔)
 api.interceptors.request.use(
     (config) => {
+        // 💡 URL이 '/'로 시작하면 baseURL의 하위 경로(v1)가 무시되는 Axios 특성 해결
+        if (config.url?.startsWith("/")) {
+            config.url = config.url.substring(1);
+        }
+
         // 브라우저 환경일 때만 localStorage 접근
         if (typeof window !== "undefined") {
             const token = localStorage.getItem("apex_access_token");

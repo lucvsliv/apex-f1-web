@@ -274,12 +274,12 @@ export function MembershipPlans() {
                                             : plan.buttonText}
 
                                     {/* 현재 플랜이 아닐 때만 화살표 표시 */}
-                                    {!isCurrentPlan && <ArrowRight className="ml-2 h-4 w-4"/>}
+                                    {!isCurrentPlan && <ArrowRight className="ml-2 h-4 w-4" />}
                                 </Button>
 
                                 <div
                                     className="text-muted-foreground mt-4 mb-6 flex items-center justify-center text-xs">
-                                    <Info className="mr-1 size-3"/>
+                                    <Info className="mr-1 size-3" />
                                     <span>7-day money-back guarantee</span>
                                 </div>
 
@@ -289,9 +289,9 @@ export function MembershipPlans() {
                                             <li key={index} className="flex items-center text-sm">
                                                 {feature.included ? (
                                                     <CheckCircle2
-                                                        className="mr-2 h-4 w-4 flex-shrink-0 text-green-500"/>
+                                                        className="mr-2 h-4 w-4 flex-shrink-0 text-green-500" />
                                                 ) : (
-                                                    <XCircle className="mr-2 h-4 w-4 flex-shrink-0 text-red-500"/>
+                                                    <XCircle className="mr-2 h-4 w-4 flex-shrink-0 text-red-500" />
                                                 )}
                                                 {feature.text}
                                             </li>
@@ -306,10 +306,10 @@ export function MembershipPlans() {
                                                     <li key={index} className="flex items-center text-sm">
                                                         {feature.included ? (
                                                             <CheckCircle2
-                                                                className="mr-2 h-4 w-4 flex-shrink-0 text-green-500"/>
+                                                                className="mr-2 h-4 w-4 flex-shrink-0 text-green-500" />
                                                         ) : (
                                                             <XCircle
-                                                                className="mr-2 h-4 w-4 flex-shrink-0 text-red-500"/>
+                                                                className="mr-2 h-4 w-4 flex-shrink-0 text-red-500" />
                                                         )}
                                                         {feature.text}
                                                     </li>

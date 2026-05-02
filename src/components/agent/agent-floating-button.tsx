@@ -12,7 +12,7 @@ export function AgentFloatingButton() {
             id="agent-floating-btn"
             onClick={toggleOpen}
             className={cn(
-                "fixed bottom-6 right-6 z-50",
+                "fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50",
                 "size-14 rounded-2xl",
                 "flex items-center justify-center",
                 "shadow-lg shadow-primary/25",
