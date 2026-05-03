@@ -34,6 +34,8 @@ Apex-F1의 사용자 인터페이스를 담당하며, F1 레이스 데이터 시
 ## Documentation & Task Conventions
 
 ### 1. Jira Ticket Convention
+* Jira 티켓 생성 시 제목 앞에 반드시 **[FE]** 머리말을 붙입니다. (예: `[FE] 사용자 프로필 수정 UI 구현`)
+
 ## 📝 Summary (요약)
 - [요약 내용 1]
 - [요약 내용 2]
@@ -52,6 +54,10 @@ Apex-F1의 사용자 인터페이스를 담당하며, F1 레이스 데이터 시
 - Jira: APEX-XXXX
 
 ### 2. Git PR Description Convention
+* PR 생성 시 반드시 다음 사항을 준수합니다.
+    * **Assignee**: `lucvsliv` (본인)으로 설정
+    * **Label**: 레포지토리에 존재하는 레이블 중 해당 작업에 적절한 것들을 모두 선택하여 설정 (예: `type/feat`, `area/ui` 등)
+
 ## 📌 Title
 [type]: [APEX-XXXX] This is description
 

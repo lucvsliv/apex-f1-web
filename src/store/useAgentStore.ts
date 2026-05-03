@@ -21,7 +21,9 @@ interface AgentState {
   setHasHydrated: (state: boolean) => void;
   toggleOpen: () => void;
   setOpen: (open: boolean) => void;
-  addMessage: (message: Omit<ChatMessage, 'id' | 'timestamp'>) => void;
+  addMessage: (message: Omit<ChatMessage, 'id' | 'timestamp'>) => string;
+  updateMessageContent: (id: string, content: string) => void;
+  updateMessage: (id: string, updates: Partial<ChatMessage>) => void;
   setTyping: (typing: boolean) => void;
   clearMessages: () => void;
 }
@@ -29,7 +31,7 @@ interface AgentState {
 const WELCOME_MESSAGE: ChatMessage = {
   id: 'welcome-msg',
   role: 'agent',
-  content: "안녕하세요! Apex-F1 AI 에이전트입니다. ✨\n\n현재 다음과 같은 작업을 도와드릴 수 있어요:\n• 📝 게시판에 게시글 작성 요청\n• 🛒 오리지널 스토어 상품 구매\n\n무엇을 도와드릴까요?",
+  content: "안녕하세요! Apex-F1 AI 에이전트입니다. ✨\n\n현재 다음과 같은 작업을 도와드릴 수 있어요:\n• 📝 게시판에 게시글 작성 요청\n• 🛒 오리지널 스토어 상품 구매\n• 💳 멤버십 구독 조회 및 변경\n\n무엇을 도와드릴까요?",
   actionType: 'none',
   timestamp: Date.now(),
 };
@@ -44,15 +46,29 @@ export const useAgentStore = create<AgentState>()(
       setHasHydrated: (state) => set({ _hasHydrated: state }),
       toggleOpen: () => set((state) => ({ isOpen: !state.isOpen })),
       setOpen: (open) => set({ isOpen: open }),
-      addMessage: (msg) => set((state) => ({
-        messages: [
-          ...state.messages,
-          {
-            ...msg,
-            id: Math.random().toString(36).substring(2, 9),
-            timestamp: Date.now(),
-          }
-        ]
+      addMessage: (msg) => {
+        const id = Math.random().toString(36).substring(2, 9);
+        set((state) => ({
+          messages: [
+            ...state.messages,
+            {
+              ...msg,
+              id,
+              timestamp: Date.now(),
+            }
+          ]
+        }));
+        return id;
+      },
+      updateMessageContent: (id, content) => set((state) => ({
+        messages: state.messages.map((m) =>
+          m.id === id ? { ...m, content: m.content + content } : m
+        ),
+      })),
+      updateMessage: (id, updates) => set((state) => ({
+        messages: state.messages.map((m) =>
+          m.id === id ? { ...m, ...updates } : m
+        ),
       })),
       setTyping: (typing) => set({ isTyping: typing }),
       clearMessages: () => set({ messages: [WELCOME_MESSAGE] }),

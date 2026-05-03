@@ -11,11 +11,11 @@ import api from "@/lib/api/client";
 
 export function ChatInputArea() {
     const [input, setInput] = useState("")
-    const { addMessage, setTyping } = useAgentStore()
+    const { addMessage, updateMessageContent, updateMessage, setTyping } = useAgentStore()
     const { user } = useUserStore()
     const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-    const handleSend = useCallback(() => {
+    const handleSend = useCallback(async () => {
         const trimmed = input.trim()
         if (!trimmed) return
 
@@ -33,80 +33,94 @@ export function ChatInputArea() {
             textareaRef.current.style.height = "auto"
         }
 
-        // 2. 에이전트 실제 API 호출
+        // 2. 에이전트 스트리밍 호출 시작
         setTyping(true)
-        api.post("/agent/chat", {
-            message: trimmed,
-            chatId: user ? `agent-user-${user.id}` : "guest-agent"
+        
+        // 빈 에이전트 메시지 미리 생성
+        const agentMsgId = addMessage({
+            role: "agent",
+            content: "",
+            actionType: "none",
         })
-        .then(response => {
-            const data = response.data;
-            let text = data.response || "";
+
+        const chatId = user ? `agent-user-${user.id}` : "guest-agent"
+
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/api/v1/agent/chat`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    message: trimmed,
+                    chatId: chatId
+                }),
+            });
+
+            if (!response.ok) throw new Error("Network response was not ok");
+            if (!response.body) throw new Error("No response body");
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let fullText = "";
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                const chunk = decoder.decode(value, { stream: true });
+                fullText += chunk;
+                
+                // 실시간 텍스트 업데이트
+                updateMessageContent(agentMsgId, chunk);
+            }
+
+            // 3. 스트리밍 완료 후 패턴 파싱 및 액션 적용
+            let finalUpdate: Partial<ChatMessage> = { content: fullText };
             
-            // 패턴 파싱 (예: :::post_draft {...} :::)
-            const postDraftMatch = text.match(/:::post_draft\s+({.*?})\s+:::/);
-            const storeActionMatch = text.match(/:::store_action\s+({.*?})\s+:::/);
+            const postDraftMatch = fullText.match(/:::post_draft\s+({.*?})\s+:::/);
+            const storeActionMatch = fullText.match(/:::store_action\s+({.*?})\s+:::/);
+            const tossPaymentMatch = fullText.match(/\[ACTION_TOSS_PAYMENT:(.*?)\]/);
             
             if (postDraftMatch) {
                 try {
                     const payload = JSON.parse(postDraftMatch[1]);
-                    const cleanText = text.replace(postDraftMatch[0], "").trim();
-                    addMessage({
-                        role: "agent",
-                        content: cleanText || "게시글 초안을 작성했습니다.",
+                    finalUpdate = {
+                        content: fullText.replace(postDraftMatch[0], "").trim() || "게시글 초안을 작성했습니다.",
                         actionType: "post_action",
                         actionPayload: payload
-                    });
-                    return;
+                    };
                 } catch (e) { console.error("JSON parse error", e); }
-            }
-            
-            if (storeActionMatch) {
+            } else if (storeActionMatch) {
                 try {
                     const payload = JSON.parse(storeActionMatch[1]);
-                    const cleanText = text.replace(storeActionMatch[0], "").trim();
-                    addMessage({
-                        role: "agent",
-                        content: cleanText || "추천 상품을 찾았습니다.",
+                    finalUpdate = {
+                        content: fullText.replace(storeActionMatch[0], "").trim() || "추천 상품을 찾았습니다.",
                         actionType: "store_action",
                         actionPayload: payload
-                    });
-                    return;
+                    };
                 } catch (e) { console.error("JSON parse error", e); }
-            }
-
-            // [ACTION_TOSS_PAYMENT:TIER] 패턴 파싱
-            const tossPaymentMatch = text.match(/\[ACTION_TOSS_PAYMENT:(.*?)\]/);
-            if (tossPaymentMatch) {
+            } else if (tossPaymentMatch) {
                 const tier = tossPaymentMatch[1];
-                const cleanText = text.replace(tossPaymentMatch[0], "").trim();
-                addMessage({
-                    role: "agent",
-                    content: cleanText || `${tier} 멤버십 결제를 진행해주세요.`,
+                finalUpdate = {
+                    content: fullText.replace(tossPaymentMatch[0], "").trim() || `${tier} 멤버십 결제를 진행해주세요.`,
                     actionType: "toss_payment",
                     actionPayload: { tier }
-                });
-                return;
+                };
             }
-            
-            addMessage({
-                role: "agent",
-                content: text,
-                actionType: "none",
+
+            // 최종 메시지 상태 업데이트
+            updateMessage(agentMsgId, finalUpdate);
+
+        } catch (error) {
+            console.error("Agent Streaming error:", error);
+            updateMessage(agentMsgId, {
+                content: "죄송합니다. 서비스 연결에 문제가 발생했습니다. 다시 시도해 주세요.",
             });
-        })
-        .catch(error => {
-            console.error("Agent API error:", error);
-            addMessage({
-                role: "agent",
-                content: "죄송합니다. 서비스 연결에 문제가 발생했습니다.",
-                actionType: "none",
-            });
-        })
-        .finally(() => {
+        } finally {
             setTyping(false)
-        });
-    }, [input, addMessage, setTyping])
+        }
+    }, [input, addMessage, updateMessageContent, updateMessage, setTyping, user])
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.nativeEvent.isComposing) return
