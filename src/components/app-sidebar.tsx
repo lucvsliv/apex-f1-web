@@ -18,7 +18,32 @@ const data = {
     logo: { name: "Apex F1", url: "/dashboard", icon: "/icons/logo.svg", },
 
     aiAgent: [
-        { title: "Apex 에이전트", url: "/dashboard/agent/chat", icon: Sparkles, },
+        {
+            title: (
+                <span className="bg-gradient-to-r from-stone-500 via-red-500 to-red-600 bg-clip-text text-transparent">
+                    DoDo 에이전트
+                </span>
+            ),
+            tooltip: "DoDo 에이전트",
+            url: "/dashboard/agent/chat",
+            icon: () => (
+                <div className="relative flex items-center justify-center">
+                    <svg width="0" height="0" className="absolute">
+                        <defs>
+                            <linearGradient id="sidebar-dodo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="10%" stopColor="#78716c" />
+                                <stop offset="70%" stopColor="#ef4444" />
+                                <stop offset="100%" stopColor="#dc2626" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <Sparkles
+                        className="size-4"
+                        style={{ stroke: "url(#sidebar-dodo-gradient)" }}
+                    />
+                </div>
+            ),
+        },
     ],
 
     navMain: [
@@ -67,7 +92,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <ServiceLogo logo={data.logo} />
             </SidebarHeader>
             <SidebarContent>
-                <NavMain label="Apex AI 에이전트" items={data.aiAgent} />
+                <NavMain label="AI 에이전트" items={data.aiAgent} />
                 <NavMain label="데이터 분석" items={data.navMain} />
                 <NavMain label="굿즈 샵" items={data.originalGoods} />
                 <NavMain label="커뮤니티" items={data.community} />

@@ -31,7 +31,7 @@ interface AgentState {
 const WELCOME_MESSAGE: ChatMessage = {
   id: 'welcome-msg',
   role: 'agent',
-  content: "안녕하세요! Apex-F1 AI 에이전트입니다. ✨\n\n현재 다음과 같은 작업을 도와드릴 수 있어요:\n• 📝 게시판에 게시글 작성 요청\n• 🛒 오리지널 스토어 상품 구매\n• 💳 멤버십 구독 조회 및 변경\n\n무엇을 도와드릴까요?",
+  content: "반가워요! 전 여러분의 요청을 즉시 해결해드리는 **FoFo**예요! \n\n무엇이든 시켜만 주세요! 다음은 제가 처리할 수 있는 일들이에요 :)\n\n- 📝 게시판에 멋진 게시글 작성하기\n- 🛒 스토어 상품 구매 도와드리기\n- 💳 멤버십 구독 상태 확인 및 변경\n\n지금 바로 시작해볼까요? 어떤 걸 도와드릴까요?",
   actionType: 'none',
   timestamp: Date.now(),
 };

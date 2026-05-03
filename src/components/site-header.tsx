@@ -9,7 +9,7 @@ export function SiteHeader() {
 
     const pageTitleMap: Record<string, string> = {
         "/dashboard": "Dashboard",
-        "/dashboard/agent/chat": "Apex Agent",
+        "/dashboard/agent/chat": "DoDo Agent",
         "/dashboard/schedules": "Schedules",
         "/dashboard/results": "Results",
         "/dashboard/teams": "Teams",

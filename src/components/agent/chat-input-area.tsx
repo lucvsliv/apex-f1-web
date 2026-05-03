@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useRef, useCallback } from "react"
+import { useState, useRef, useCallback, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { useAgentStore } from "@/store/useAgentStore"
+import { useAgentStore, ChatMessage } from "@/store/useAgentStore"
 import { useProductStore } from "@/store/useProductStore"
 import { useUserStore } from "@/store/useUserStore"
 import { Send } from "lucide-react"
@@ -12,8 +12,15 @@ import api from "@/lib/api/client";
 export function ChatInputArea() {
     const [input, setInput] = useState("")
     const { addMessage, updateMessageContent, updateMessage, setTyping } = useAgentStore()
-    const { user } = useUserStore()
+    const { user, fetchUser } = useUserStore()
     const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+    // 컴포넌트 마운트 시 유저 정보가 없으면 가져오기 시도
+    useEffect(() => {
+        if (!user && typeof window !== "undefined" && localStorage.getItem("apex_access_token")) {
+            fetchUser();
+        }
+    }, [user, fetchUser]);
 
     const handleSend = useCallback(async () => {
         const trimmed = input.trim()
@@ -35,7 +42,7 @@ export function ChatInputArea() {
 
         // 2. 에이전트 스트리밍 호출 시작
         setTyping(true)
-        
+
         // 빈 에이전트 메시지 미리 생성
         const agentMsgId = addMessage({
             role: "agent",
@@ -44,12 +51,16 @@ export function ChatInputArea() {
         })
 
         const chatId = user ? `agent-user-${user.id}` : "guest-agent"
+        const token = typeof window !== "undefined" ? localStorage.getItem("apex_access_token") : null
+        console.log("[DEBUG] Sending chat request. Token exists:", !!token, "chatId:", chatId);
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/api/v1/agent/chat`, {
+            const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
+            const response = await fetch(`${baseUrl}/agent/chat`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    ...(token ? { "Authorization": `Bearer ${token}` } : {}),
                 },
                 body: JSON.stringify({
                     message: trimmed,
@@ -63,25 +74,63 @@ export function ChatInputArea() {
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
             let fullText = "";
+            let leftover = "";
+            let isFirstChunk = true;
 
             while (true) {
                 const { done, value } = await reader.read();
                 if (done) break;
 
                 const chunk = decoder.decode(value, { stream: true });
-                fullText += chunk;
+                const currentData = leftover + chunk;
+                const lines = currentData.split("\n");
                 
-                // 실시간 텍스트 업데이트
-                updateMessageContent(agentMsgId, chunk);
+                leftover = lines.pop() || "";
+
+                for (const line of lines) {
+                    if (!line.startsWith("data:")) continue;
+
+                    const content = line.substring(5);
+                    const finalChunk = content === "" ? "\n" : content;
+
+                    if (finalChunk) {
+                        if (isFirstChunk && finalChunk.trim() !== "") {
+                            setTyping(false); 
+                            isFirstChunk = false;
+                            updateMessage(agentMsgId, { content: finalChunk });
+                            fullText += finalChunk;
+                        } else if (!isFirstChunk) {
+                            fullText += finalChunk;
+                            updateMessageContent(agentMsgId, finalChunk);
+                        }
+                    }
+                }
+            }
+            
+            // 마지막 남은 조각 처리
+            if (leftover && leftover.startsWith("data:")) {
+                const contentToAdd = leftover.substring(5) === "" ? "\n" : leftover.substring(5);
+                
+                if (contentToAdd) {
+                    if (isFirstChunk) {
+                        setTyping(false);
+                        isFirstChunk = false;
+                        updateMessage(agentMsgId, { content: contentToAdd });
+                        fullText += contentToAdd;
+                    } else {
+                        fullText += contentToAdd;
+                        updateMessageContent(agentMsgId, contentToAdd);
+                    }
+                }
             }
 
             // 3. 스트리밍 완료 후 패턴 파싱 및 액션 적용
             let finalUpdate: Partial<ChatMessage> = { content: fullText };
-            
+
             const postDraftMatch = fullText.match(/:::post_draft\s+({.*?})\s+:::/);
             const storeActionMatch = fullText.match(/:::store_action\s+({.*?})\s+:::/);
             const tossPaymentMatch = fullText.match(/\[ACTION_TOSS_PAYMENT:(.*?)\]/);
-            
+
             if (postDraftMatch) {
                 try {
                     const payload = JSON.parse(postDraftMatch[1]);
@@ -147,7 +196,7 @@ export function ChatInputArea() {
                         value={input}
                         onChange={handleInput}
                         onKeyDown={handleKeyDown}
-                        placeholder="Apex Agent에게 메시지 보내기..."
+                        placeholder="FoFo에게 메시지 보내기..."
                         rows={1}
                         className={cn(
                             "w-full resize-none rounded-xl border border-stone-200 bg-muted/50 px-4 py-3 pr-12 text-sm",
@@ -174,7 +223,7 @@ export function ChatInputArea() {
                 </Button>
             </div>
             <p className="text-[10px] text-muted-foreground text-center mt-2">
-                Apex Agent는 실수할 수 있습니다. 중요한 작업은 반드시 확인해주세요.
+                FoFo는 실수할 수 있습니다. 중요한 작업은 반드시 확인해주세요.
             </p>
         </div>
     )

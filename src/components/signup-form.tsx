@@ -245,7 +245,7 @@ export function SignupForm({
                                 <div className="flex flex-col items-center gap-2 text-center">
                                     <h1 className="text-2xl font-bold">계정 만들기</h1>
                                     <p className="text-muted-foreground text-sm text-balance">
-                                        Apex F1 Agent에 가입하고 데이터를 탐색하세요
+                                        Apex F1에 가입하고 데이터를 탐색하세요
                                     </p>
                                 </div>
 
