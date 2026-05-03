@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 
-export function AgentChatSheet() {
+export function FoFoChat() {
     const { isOpen, setOpen, clearMessages, addMessage } = useAgentStore()
 
     const handleClear = () => {
@@ -37,11 +37,23 @@ export function AgentChatSheet() {
             {/* 헤더 */}
             <div className="flex items-center justify-between px-4 py-3">
                 <div className="flex items-center gap-2.5">
-                    <div className="size-9 rounded-xl bg-primary/10 flex items-center justify-center">
-                        <Sparkles className="size-4 text-primary" />
+                    <div className="size-9 bg-transparent flex items-center justify-center overflow-visible relative">
+                        <svg width="0" height="0" className="absolute">
+                            <defs>
+                                <linearGradient id="fofo-header-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="10%" stopColor="#3b82f6" />
+                                    <stop offset="70%" stopColor="#ef4444" />
+                                    <stop offset="100%" stopColor="#dc2626" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <Sparkles
+                            className="size-5"
+                            style={{ stroke: "url(#fofo-header-gradient)" }}
+                        />
                     </div>
                     <div>
-                        <h2 className="text-sm font-semibold">Apex Agent</h2>
+                        <h2 className="text-sm font-semibold">FoFo</h2>
                         <div className="flex items-center gap-1.5">
                             <span className="size-1.5 rounded-full bg-green-500 animate-pulse" />
                             <span className="text-[10px] text-muted-foreground">온라인</span>

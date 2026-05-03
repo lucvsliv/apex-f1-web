@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useRef } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { AgentFloatingButton } from "@/components/agent/agent-floating-button"
-import { AgentChatSheet } from "@/components/agent/agent-chat-sheet"
+import { FoFoChat } from "@/components/agent/fofo-chat"
 import { useAgentStore } from "@/store/useAgentStore"
 import { useUserStore } from "@/store/useUserStore"
 import api from "@/lib/api/client"
@@ -75,7 +75,7 @@ export function AgentGlobalWidget() {
             <Suspense fallback={null}>
                 <PaymentSuccessHandler />
             </Suspense>
-            <AgentChatSheet />
+            <FoFoChat />
             <AgentFloatingButton />
         </>
     )

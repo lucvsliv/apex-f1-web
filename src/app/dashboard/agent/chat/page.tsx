@@ -1,9 +1,9 @@
-import DataChat from "@/components/data-chat"
+import DoDoChat from "@/components/dodo-chat"
 
-export default function Page() {
+export default function AgentChatPage() {
     return (
-        <div className="flex-1 h-[calc(100vh-theme(spacing.16))]">
-            <DataChat />
+        <div className="flex flex-col h-full overflow-hidden">
+            <DoDoChat />
         </div>
     )
 }

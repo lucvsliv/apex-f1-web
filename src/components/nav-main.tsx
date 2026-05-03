@@ -11,9 +11,10 @@ export function NavMain({
 }: {
     label: string
     items: {
-        title: string
+        title: string | React.ReactNode
         url: string
         icon?: React.ElementType
+        tooltip?: string
     }[]
 }) {
     const pathname = usePathname()
@@ -26,10 +27,10 @@ export function NavMain({
             </SidebarGroupLabel>
             <SidebarMenu className={"text-stone-600"}>
                 {items.map((item) => (
-                    <SidebarMenuItem key={item.title}>
+                    <SidebarMenuItem key={typeof item.title === "string" ? item.title : item.url}>
                         <SidebarMenuButton
                             asChild
-                            tooltip={item.title}
+                            tooltip={item.tooltip || (typeof item.title === "string" ? item.title : undefined)}
                             isActive={pathname === item.url}
                             className="data-[active=true]:bg-sidebar-foreground/10"
                         >

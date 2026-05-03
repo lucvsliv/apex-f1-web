@@ -92,7 +92,7 @@ function SuccessContent() {
                 <div className="flex justify-center gap-3">
                     <Button onClick={() => router.push("/")}>홈으로 이동</Button>
                     <Button variant="outline" onClick={() => router.push("/dashboard/agent/chat")}>
-                        AI Agent 바로가기
+                        DoDo 에이전트 바로가기
                     </Button>
                 </div>
             </CardContent>
