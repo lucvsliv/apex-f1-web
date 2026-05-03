@@ -1,14 +1,11 @@
 "use client"
 
 import * as React from "react"
-import { useEffect } from "react"
-// 💡 ShoppingCart, CreditCard 아이콘 추가
-import { Trophy, Timer, Shell, Map, PieChart, LineSquiggle, ClipboardList, Bot, Sparkles, Store, ShoppingCart, CreditCard, MessageSquare } from "lucide-react"
+import { Shell, Store, Timer, Trophy, LineSquiggle, Sparkles, ShoppingCart } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
-import { ServiceLogo } from "@/components/service-logo"
+import { NavContent } from "@/components/nav-content"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail, } from "@/components/ui/sidebar"
 import { IconBorderCornerPill, IconCar4wd, IconHelmet, IconCalendarEvent, } from "@tabler/icons-react";
 
@@ -18,7 +15,32 @@ const data = {
     logo: { name: "Apex F1", url: "/dashboard", icon: "/icons/logo.svg", },
 
     aiAgent: [
-        { title: "Apex 에이전트", url: "/dashboard/agent/chat", icon: Sparkles, },
+        {
+            title: (
+                <span className="bg-gradient-to-r from-stone-500 via-red-500 to-red-600 bg-clip-text text-transparent">
+                    DoDo 에이전트
+                </span>
+            ),
+            tooltip: "DoDo 에이전트",
+            url: "/dashboard/agent/chat",
+            icon: () => (
+                <div className="relative flex items-center justify-center">
+                    <svg width="0" height="0" className="absolute">
+                        <defs>
+                            <linearGradient id="sidebar-dodo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="10%" stopColor="#78716c" />
+                                <stop offset="70%" stopColor="#ef4444" />
+                                <stop offset="100%" stopColor="#dc2626" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <Sparkles
+                        className="size-4"
+                        style={{ stroke: "url(#sidebar-dodo-gradient)" }}
+                    />
+                </div>
+            ),
+        },
     ],
 
     navMain: [
@@ -34,46 +56,41 @@ const data = {
     originalGoods: [
         { title: "상품 목록", url: "/dashboard/store/product", icon: Store },
         { title: "장바구니", url: "/dashboard/store/cart", icon: ShoppingCart },
-        { title: "결제하기", url: "/dashboard/store/checkout", icon: CreditCard },
     ],
 
-    community: [
-        { title: "자유게시판", url: "/dashboard/community", icon: MessageSquare },
+    userMembership: [
+        { title: "멤버십 관리", url: "/dashboard/profile", icon: IconBorderCornerPill },
     ],
-
-    // projects: [
-    //     { name: "Board", url: "#", icon: ClipboardList },
-    //     { name: "Sales & Marketing", url: "#", icon: PieChart },
-    //     { name: "Travel", url: "#", icon: Map },
-    // ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-    const { user, isLoading, fetchUser } = useUserStore();
-
-    useEffect(() => {
-        fetchUser();
-    }, [fetchUser]);
-
-    const displayUser = {
-        nickname: user?.nickname ?? (isLoading ? "로딩 중..." : "게스트"),
-        email: user?.email ?? (isLoading ? "잠시만 기다려 주세요" : "로그인이 필요합니다"),
-        profileImageUrl: user?.profileImageUrl ?? "/avatars/default.svg",
-    };
+    const { user } = useUserStore()
 
     return (
-        <Sidebar collapsible="icon" {...props}>
+        <Sidebar collapsible="icon" {...props} className="border-r border-gray-200">
             <SidebarHeader>
-                <ServiceLogo logo={data.logo} />
+                <div className="flex items-center gap-2 px-2 py-2">
+                    <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-red-600 text-white">
+                        <img src="/icons/logo.svg" alt="Apex F1" className="size-6 invert brightness-0" />
+                    </div>
+                    <div className="flex flex-col gap-0.5 leading-none">
+                        <span className="font-semibold text-stone-950">Apex F1</span>
+                        <span className="text-xs text-stone-500">Official Partner</span>
+                    </div>
+                </div>
             </SidebarHeader>
             <SidebarContent>
-                <NavMain label="Apex AI 에이전트" items={data.aiAgent} />
-                <NavMain label="데이터 분석" items={data.navMain} />
-                <NavMain label="굿즈 샵" items={data.originalGoods} />
-                <NavMain label="커뮤니티" items={data.community} />
+                <NavMain items={data.aiAgent} label="AI Agents" />
+                <NavMain items={data.navMain} label="F1 Data" />
+                <NavContent items={data.originalGoods} label="Store" />
+                <NavContent items={data.userMembership} label="Membership" />
             </SidebarContent>
             <SidebarFooter>
-                <NavUser user={displayUser} />
+                <NavUser user={{
+                    name: user?.nickname || "Guest",
+                    email: user?.email || "guest@example.com",
+                    avatar: user?.profileImageUrl || "https://bundui-images.netlify.app/avatars/08.png",
+                }} />
             </SidebarFooter>
             <SidebarRail />
         </Sidebar>
