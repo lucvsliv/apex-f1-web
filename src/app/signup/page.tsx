@@ -1,4 +1,3 @@
-// 💡 LoginForm 대신 우리가 새로 만든 SignupForm을 임포트합니다.
 import { SignupForm } from "@/components/signup-form";
 
 export default function SignupPage() {
