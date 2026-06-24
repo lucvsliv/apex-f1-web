@@ -64,7 +64,8 @@ export function ChatInputArea() {
                 },
                 body: JSON.stringify({
                     message: trimmed,
-                    chatId: chatId
+                    chatId: chatId,
+                    agentId: "fofo"
                 }),
             });
 

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useLanguage } from "@/contexts/language-context";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import api from "@/lib/api/client";
@@ -81,6 +82,8 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export default function DriverDetail() {
+    const { language } = useLanguage();
+
     const router = useRouter();
     const params = useParams();
 
@@ -90,6 +93,7 @@ export default function DriverDetail() {
     const [driverDetail, setDriverDetail] = React.useState<SeasonDriverDetail | null>(null);
     const [driversList, setDriversList] = React.useState<SeasonDriverSummary[]>([]);
     const [isLoading, setIsLoading] = React.useState<boolean>(true);
+    const [imgSrc, setImgSrc] = React.useState<string>("");
 
     React.useEffect(() => {
         if (!currentYear || !currentDriverId) return;
@@ -122,12 +126,18 @@ export default function DriverDetail() {
         router.push(`/dashboard/drivers/${currentYear}/${newDriverId}`);
     };
 
+    const imagePath = currentYear && currentDriverId ? `/profile/${currentYear}-${currentDriverId}.png` : "";
+
+    // Effect to update imgSrc when currentYear or currentDriverId changes
+    React.useEffect(() => {
+        if (imagePath) {
+            setImgSrc(imagePath);
+        }
+    }, [imagePath]);
+
     if (isLoading || !driverDetail) {
         return <div className="flex justify-center py-20 text-gray-500">Loading driver details...</div>;
     }
-
-    const imagePath = `/profile/${currentYear}-${driverDetail.driverId}.png`;
-
     // TODO: 현재 평균값은 Mock 데이터 -> 추후 백엔드에서 계산하여 내려주는 것이 필요
     // TODO: 따로 ResponseDTO 만들거나 기존 DTO에 Field 추가하는 방식으로
     const radarData = [
@@ -144,17 +154,17 @@ export default function DriverDetail() {
             <Breadcrumb className="mx-7 mt-6">
                 <BreadcrumbList>
                     <BreadcrumbItem>
-                        <BreadcrumbLink href="/dashboard" className="text-sm">Home</BreadcrumbLink>
+                        <BreadcrumbLink href="/dashboard" className="text-sm">{language === 'ko' ? '홈' : 'Home'}</BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
 
-                        <BreadcrumbLink href="/dashboard/drivers" className="text-sm">Drivers</BreadcrumbLink>
+                        <BreadcrumbLink href="/dashboard/drivers" className="text-sm">{language === 'ko' ? '드라이버' : 'Drivers'}</BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <Select value={currentYear} onValueChange={handleYearChange}>
-                            <SelectTrigger className="text-sm h-8 border-stone-200 bg-white shadow-sm font-medium focus:ring-0 w-[100px]">
+                            <SelectTrigger className="text-sm h-8 border-stone-200 bg-white shadow-sm font-medium focus:ring-0 w-fit">
                                 <SelectValue placeholder="Year" />
                             </SelectTrigger>
                             <SelectContent className="border-stone-200 bg-white">
@@ -168,7 +178,7 @@ export default function DriverDetail() {
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <Select value={currentDriverId} onValueChange={handleDriverChange}>
-                            <SelectTrigger className="text-sm h-8 border-stone-200 bg-white shadow-sm font-medium focus:ring-0 w-[180px]">
+                            <SelectTrigger className="text-sm h-8 border-stone-200 bg-white shadow-sm font-medium focus:ring-0 w-fit">
                                 <SelectValue placeholder="Driver" />
                             </SelectTrigger>
                             <SelectContent className="border-stone-200 bg-white">
@@ -188,11 +198,12 @@ export default function DriverDetail() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center p-8 rounded-2xl border border-stone-200 shadow-sm bg-white">
                     <div className="flex justify-center md:justify-end">
                     <Image
-                        src={imagePath}
+                        src={imgSrc || imagePath}
                         alt={driverDetail.name}
                         width={280}
                         height={280}
                         className="object-cover object-top rounded-lg aspect-square shadow-inner"
+                        onError={() => setImgSrc("/images/driver-placeholder.png")}
                     />
                 </div>
                 <div className="md:col-span-2 space-y-4 text-center md:text-left">

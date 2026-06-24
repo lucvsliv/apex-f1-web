@@ -14,11 +14,13 @@ import api from "@/lib/api/client";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
+import { useLanguage } from "@/contexts/language-context";
 
 type Message = {
     id: string;
     role: "user" | "assistant";
     content: string;
+    isLimitMessage?: boolean;
 };
 
 interface UserData {
@@ -28,13 +30,37 @@ interface UserData {
 }
 
 export default function DoDoChat() {
+    const { t, language } = useLanguage();
     const [messages, setMessages] = React.useState<Message[]>([]);
     const [input, setInput] = React.useState("");
     const [isLoading, setIsLoading] = React.useState(false);
-    const [chatId, setChatId] = React.useState<string>(`chat-${Date.now()}`);
-
+    const [chatId, setChatId] = React.useState<string>("");
+    const [isLimitReached, setIsLimitReached] = React.useState(false);
+    const [remainingSeconds, setRemainingSeconds] = React.useState(0);
 
     const [user, setUser] = React.useState<UserData | null>(null);
+
+    React.useEffect(() => {
+        if (isLimitReached && remainingSeconds > 0) {
+            const timer = setInterval(() => {
+                setRemainingSeconds((prev) => {
+                    if (prev <= 1) {
+                        clearInterval(timer);
+                        setIsLimitReached(false);
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+            return () => clearInterval(timer);
+        }
+    }, [isLimitReached, remainingSeconds]);
+
+    const formatTime = (seconds: number) => {
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        return `${m}분 ${s}초`;
+    };
 
     const textareaRef = React.useRef<HTMLTextAreaElement>(null);
     const messagesEndRef = React.useRef<HTMLDivElement>(null);
@@ -48,6 +74,7 @@ export default function DoDoChat() {
     }, [messages, isLoading]);
 
     React.useEffect(() => {
+        setChatId(`chat-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`);
         const fetchUserInfo = async () => {
             try {
                 const response = await api.get("/users/me");
@@ -94,7 +121,15 @@ export default function DoDoChat() {
                 }),
             });
 
-            if (!response.ok) throw new Error("Network response was not ok");
+            if (!response.ok) {
+                if (response.status === 429) {
+                    const errorData = await response.json().catch(() => ({}));
+                    const err = new Error("TOO_MANY_REQUESTS") as any;
+                    err.remainingSeconds = errorData.remainingSeconds ? parseInt(errorData.remainingSeconds, 10) : 0;
+                    throw err;
+                }
+                throw new Error("Network response was not ok");
+            }
             if (!response.body) throw new Error("No response body");
 
             const reader = response.body.getReader();
@@ -172,15 +207,45 @@ export default function DoDoChat() {
                 }
             }
 
-        } catch (error) {
+        } catch (error: any) {
             console.error("채팅 전송 실패:", error);
-            setMessages((prev) =>
-                prev.map((msg) =>
-                    msg.id === assistantMsgId
-                        ? { ...msg, content: "서버와 연결할 수 없거나 요청 처리 중 오류가 발생했습니다." }
-                        : msg
-                )
-            );
+            if (error.message === "TOO_MANY_REQUESTS") {
+                setIsLimitReached(true);
+                setRemainingSeconds(error.remainingSeconds || 0);
+                setMessages((prev) => {
+                    const exists = prev.some(msg => msg.id === assistantMsgId);
+                    const errorContent = t("chat.limit.reached");
+                    if (exists) {
+                        return prev.map((msg) =>
+                            msg.id === assistantMsgId
+                                ? { ...msg, content: errorContent, isLimitMessage: true }
+                                : msg
+                        );
+                    } else {
+                        return [
+                            ...prev,
+                            { id: assistantMsgId, role: "assistant", content: errorContent, isLimitMessage: true }
+                        ];
+                    }
+                });
+            } else {
+                setMessages((prev) => {
+                    const exists = prev.some(msg => msg.id === assistantMsgId);
+                    const errorContent = t("chat.error.server");
+                    if (exists) {
+                        return prev.map((msg) =>
+                            msg.id === assistantMsgId
+                                ? { ...msg, content: errorContent }
+                                : msg
+                        );
+                    } else {
+                        return [
+                            ...prev,
+                            { id: assistantMsgId, role: "assistant", content: errorContent }
+                        ];
+                    }
+                });
+            }
         } finally {
             setIsLoading(false);
         }
@@ -207,7 +272,7 @@ export default function DoDoChat() {
             <Breadcrumb className="px-6 py-4 border-b border-stone-200 bg-white/80 backdrop-blur-md sticky top-0 z-10 dark:bg-gray-900/80 dark:border-gray-800">
                 <BreadcrumbList>
                     <BreadcrumbItem>
-                        <BreadcrumbLink href="/dashboard" className="text-sm font-medium">Home</BreadcrumbLink>
+                        <BreadcrumbLink href="/dashboard" className="text-sm font-medium">{language === 'ko' ? '홈' : 'Home'}</BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
@@ -252,10 +317,10 @@ export default function DoDoChat() {
                                 </div> F1 DATA SPECIALTY AI
                             </motion.div>
                             <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
-                                무엇을 분석해 드릴까요, <span className="bg-gradient-to-r from-red-600 to-red-400 bg-clip-text text-transparent">{displayNickname}</span>님?
+                                {t("chat.welcome.subtitle")}<span className="bg-gradient-to-r from-red-600 to-red-400 bg-clip-text text-transparent">{displayNickname}</span>?
                             </h2>
                             <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                                저는 여러분의 F1 데이터 전문가 <span className="font-semibold text-stone-800 dark:text-stone-200">DoDo</span>입니다.<br />
+                                {t("chat.welcome.desc")}<span className="font-semibold text-stone-800 dark:text-stone-200">DoDo</span>입니다.<br />
                             </p>
                         </div>
 
@@ -264,24 +329,25 @@ export default function DoDoChat() {
                             <div className="relative flex flex-col w-full rounded-[28px] border border-stone-200 bg-white/90 backdrop-blur-xl shadow-2xl shadow-stone-200/50 focus-within:ring-2 focus-within:ring-red-500/20 transition-all p-3 dark:bg-gray-900/90 dark:border-gray-800 dark:shadow-none">
                                 <Textarea
                                     ref={textareaRef}
-                                    placeholder="분석하고 싶은 레이스나 드라이버에 대해 물어보세요..."
-                                    className="min-h-[100px] w-full resize-none border-0 focus-visible:ring-0 px-5 py-4 text-lg shadow-none bg-transparent placeholder:text-stone-400 dark:placeholder:text-gray-500"
+                                    placeholder={isLimitReached ? t("chat.input.placeholder.limit").replace("{time}", formatTime(remainingSeconds)) : t("chat.input.placeholder.normal")}
+                                    className="min-h-[100px] w-full resize-none border-0 focus-visible:ring-0 px-5 py-4 text-lg shadow-none bg-transparent placeholder:text-stone-400 dark:placeholder:text-gray-500 disabled:opacity-50"
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     onKeyDown={handleKeyDown}
+                                    disabled={isLoading || isLimitReached}
                                 />
                                 <div className="flex justify-between items-center px-3 pb-2 mt-2">
                                     <div className="flex items-center gap-2 text-xs font-medium text-stone-400 px-2">
-                                        <div className="size-2 rounded-full bg-green-500 animate-pulse" />
-                                        DoDo is Ready
+                                        <div className={`size-2 rounded-full ${isLimitReached ? 'bg-red-500' : 'bg-green-500 animate-pulse'}`} />
+                                        {isLimitReached ? t("chat.status.limit") : t("chat.status.ready")}
                                     </div>
                                     <Button
                                         size="lg"
-                                        className="rounded-2xl px-6 bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-200 dark:shadow-none transition-all active:scale-95"
+                                        className="rounded-2xl px-6 bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-200 dark:shadow-none transition-all active:scale-95 disabled:opacity-50"
                                         onClick={handleSend}
-                                        disabled={!input.trim() || isLoading}
+                                        disabled={!input.trim() || isLoading || isLimitReached}
                                     >
-                                        <Send className="w-4 h-4 mr-2" /> 분석 시작
+                                        <Send className="w-4 h-4 mr-2" /> {t("chat.button.send")}
                                     </Button>
                                 </div>
                             </div>
@@ -298,8 +364,8 @@ export default function DoDoChat() {
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.4 + (i * 0.1) }}
-                                    onClick={() => handleSuggestionClick(item.query)}
-                                    className="group flex items-center gap-2.5 px-4 py-2 rounded-full bg-white border border-stone-200 shadow-sm hover:border-red-400 hover:bg-red-50/30 transition-all text-left dark:bg-gray-900 dark:border-gray-800 dark:hover:border-red-900"
+                                    onClick={() => !isLimitReached && handleSuggestionClick(item.query)}
+                                    className={`group flex items-center gap-2.5 px-4 py-2 rounded-full bg-white border border-stone-200 shadow-sm transition-all text-left dark:bg-gray-900 dark:border-gray-800 ${isLimitReached ? 'opacity-50 cursor-not-allowed' : 'hover:border-red-400 hover:bg-red-50/30 dark:hover:border-red-900'}`}
                                 >
                                     <item.icon className="w-4 h-4 text-stone-500 group-hover:text-red-600 transition-colors" />
                                     <span className="text-sm font-medium text-stone-600 dark:text-stone-300 group-hover:text-stone-900 dark:group-hover:text-white transition-colors">{item.title}</span>
@@ -378,6 +444,16 @@ export default function DoDoChat() {
                                                     >
                                                         {msg.content}
                                                     </ReactMarkdown>
+                                                    {msg.isLimitMessage && (
+                                                        <div className="pt-2">
+                                                            <Button 
+                                                                className="bg-red-600 hover:bg-red-700 text-white rounded-full px-6 shadow-md shadow-red-200 dark:shadow-none"
+                                                                onClick={() => window.location.href = '/membership'}
+                                                            >
+                                                                멤버십 가입하기
+                                                            </Button>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             ) : (
                                                 <div className="whitespace-pre-wrap">{msg.content}</div>
@@ -416,7 +492,7 @@ export default function DoDoChat() {
                                                     <span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce [animation-delay:0.2s]" />
                                                     <span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce [animation-delay:0.4s]" />
                                                 </div>
-                                                <ItemTitle className="line-clamp-1">DoDo가 데이터를 정밀 분석 중입니다...</ItemTitle>
+                                                <ItemTitle className="line-clamp-1">{t("chat.loading")}</ItemTitle>
                                             </div>
                                         </div>
                                     </div>
@@ -429,15 +505,15 @@ export default function DoDoChat() {
                             <div className="relative flex flex-col w-full rounded-2xl border border-gray-200 bg-white shadow-sm focus-within:ring-1 focus-within:ring-gray-300 transition-all overflow-hidden p-1 dark:bg-gray-950 dark:border-gray-800">
                                 <Textarea
                                     ref={textareaRef}
-                                    placeholder="어시스턴트에게 질문하기..."
-                                    className="min-h-[50px] max-h-[150px] w-full resize-none border-0 focus-visible:ring-0 px-4 py-2 text-base shadow-none bg-transparent"
+                                    placeholder={isLimitReached ? t("chat.input.placeholder.limit").replace("{time}", formatTime(remainingSeconds)) : t("chat.input.placeholder.normal")}
+                                    className="min-h-[50px] max-h-[150px] w-full resize-none border-0 focus-visible:ring-0 px-4 py-2 text-base shadow-none bg-transparent disabled:opacity-50"
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     onKeyDown={handleKeyDown}
-                                    disabled={isLoading}
+                                    disabled={isLoading || isLimitReached}
                                 />
                                 <div className="flex justify-end p-1">
-                                    <Button size="icon" className="rounded-full w-8 h-8" onClick={handleSend} disabled={!input.trim() || isLoading}>
+                                    <Button size="icon" className="rounded-full w-8 h-8" onClick={handleSend} disabled={!input.trim() || isLoading || isLimitReached}>
                                         <Send className="w-3.5 h-3.5" />
                                     </Button>
                                 </div>

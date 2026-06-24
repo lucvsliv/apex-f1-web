@@ -4,6 +4,7 @@ export interface Schedule {
     round: string
     countryCode: string
     countryCodeISO: string
+    grandPrixId: string
     name: string
     date: string
     circuit: string

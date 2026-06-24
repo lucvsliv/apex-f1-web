@@ -1,4 +1,5 @@
 import { useRouter } from "next/navigation";
+import { useAgentStore } from "@/store/useAgentStore";
 
 export const useAuth = () => {
     const router = useRouter();
@@ -6,6 +7,9 @@ export const useAuth = () => {
     const logout = () => {
         // 1. 브라우저에 저장된 자체 JWT 삭제
         localStorage.removeItem("apex_access_token");
+
+        // FoFo 에이전트 채팅 기록 초기화
+        useAgentStore.getState().clearMessages();
 
         // (선택) 카카오 로그아웃 API 호출이 필요하다면 여기에 추가
 

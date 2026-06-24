@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useLanguage } from "@/contexts/language-context";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +21,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {usePathname, useRouter} from "next/navigation";
 
 const CheckoutPage = () => {
+    const { language } = useLanguage();
     const [selectedPayment, setSelectedPayment] = useState("checkout");
     const router = useRouter();
     const pathname = usePathname();
@@ -75,11 +77,11 @@ const CheckoutPage = () => {
             <Breadcrumb className="mx-7 mt-6">
                 <BreadcrumbList>
                     <BreadcrumbItem>
-                        <BreadcrumbLink href="/dashboard" className="text-sm">Home</BreadcrumbLink>
+                        <BreadcrumbLink href="/dashboard" className="text-sm">{language === 'ko' ? '홈' : 'Home'}</BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbLink href="/dashboard/store/product" className="text-sm">Store</BreadcrumbLink>
+                        <BreadcrumbLink href="/dashboard/store/product" className="text-sm">{language === 'ko' ? '스토어' : 'Store'}</BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
@@ -87,7 +89,7 @@ const CheckoutPage = () => {
                             value={currentTab}
                             onValueChange={(val) => router.push(`/dashboard/store/${val}`)}
                         >
-                            <SelectTrigger className="w-[120px] text-sm h-8">
+                            <SelectTrigger className="w-fit text-sm h-8">
                                 <SelectValue placeholder="Menu" />
                             </SelectTrigger>
                             <SelectContent className="border-stone-200">

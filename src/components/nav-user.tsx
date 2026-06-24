@@ -13,6 +13,7 @@ import {
 
 import { useRouter } from "next/navigation"
 import { useUserStore } from "@/store/useUserStore"
+import { useAgentStore } from "@/store/useAgentStore"
 
 import {
     Avatar,
@@ -57,8 +58,8 @@ export function NavUser({
 
     const handleLogout = () => {
         localStorage.removeItem("apex_access_token")
+        useAgentStore.getState().clearMessages()
         clearUser()
-        alert("로그아웃 되었습니다.")
         router.push("/login")
     }
 

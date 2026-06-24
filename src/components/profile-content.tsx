@@ -13,7 +13,9 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import api from "@/lib/api/client"; // 💡 유저 정보를 가져오기 위한 api 임포트
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import api from "@/lib/api/client";
+import { useLanguage } from "@/contexts/language-context";
 
 interface UserData {
     tier: string;
@@ -21,6 +23,7 @@ interface UserData {
 
 export default function ProfileContent() {
     const router = useRouter();
+    const { t, language, setLanguage } = useLanguage();
 
     // 💡 1. 유저 상태 관리 추가
     const [user, setUser] = useState<UserData | null>(null);
@@ -57,49 +60,49 @@ export default function ProfileContent() {
     return (
         <Tabs defaultValue="personal" className="w-full space-y-6">
             <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 h-auto p-1 gap-1 md:gap-0">
-                <TabsTrigger value="personal">Personal</TabsTrigger>
-                <TabsTrigger value="account">Account</TabsTrigger>
-                <TabsTrigger value="membership">Membership</TabsTrigger>
-                <TabsTrigger value="security">Security</TabsTrigger>
-                <TabsTrigger value="notifications">Notifications</TabsTrigger>
+                <TabsTrigger value="personal">{t("profile.tabs.personal")}</TabsTrigger>
+                <TabsTrigger value="account">{t("profile.tabs.account")}</TabsTrigger>
+                <TabsTrigger value="membership">{t("profile.tabs.membership")}</TabsTrigger>
+                <TabsTrigger value="security">{t("profile.tabs.security")}</TabsTrigger>
+                <TabsTrigger value="notifications">{t("profile.tabs.notifications")}</TabsTrigger>
             </TabsList>
 
             {/* Personal Information */}
             <TabsContent value="personal" className="space-y-6">
                 <Card className="border-stone-200">
                     <CardHeader>
-                        <CardTitle>Personal Information</CardTitle>
-                        <CardDescription>Update your personal details and profile information.</CardDescription>
+                        <CardTitle>{t("profile.personal.title")}</CardTitle>
+                        <CardDescription>{t("profile.personal.desc")}</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                             <div className="space-y-2">
-                                <Label htmlFor="firstName">First Name</Label>
+                                <Label htmlFor="firstName">{t("profile.personal.firstname")}</Label>
                                 <Input id="firstName" defaultValue="John" disabled className="bg-stone-50 text-stone-500 border-dashed" />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="lastName">Last Name</Label>
+                                <Label htmlFor="lastName">{t("profile.personal.lastname")}</Label>
                                 <Input id="lastName" defaultValue="Doe" disabled className="bg-stone-50 text-stone-500 border-dashed" />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="email">Email</Label>
+                                <Label htmlFor="email">{t("profile.personal.email")}</Label>
                                 <Input id="email" type="email" defaultValue="john.doe@example.com" disabled className="bg-stone-50 text-stone-500 border-dashed" />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="phone">Phone</Label>
+                                <Label htmlFor="phone">{t("profile.personal.phone")}</Label>
                                 <Input id="phone" defaultValue="+1 (555) 123-4567" disabled className="bg-stone-50 text-stone-500 border-dashed" />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="jobTitle">Job Title</Label>
+                                <Label htmlFor="jobTitle">{t("profile.personal.jobtitle")}</Label>
                                 <Input id="jobTitle" defaultValue="Senior Product Designer" disabled className="bg-stone-50 text-stone-500 border-dashed" />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="company">Company</Label>
+                                <Label htmlFor="company">{t("profile.personal.company")}</Label>
                                 <Input id="company" defaultValue="Acme Inc." disabled className="bg-stone-50 text-stone-500 border-dashed" />
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="bio">Bio</Label>
+                            <Label htmlFor="bio">{t("profile.personal.bio")}</Label>
                             <Textarea
                                 id="bio"
                                 placeholder="Tell us about yourself..."
@@ -110,7 +113,7 @@ export default function ProfileContent() {
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="location">Location</Label>
+                            <Label htmlFor="location">{t("profile.personal.location")}</Label>
                             <Input id="location" defaultValue="San Francisco, CA" disabled className="bg-stone-50 text-stone-500 border-dashed" />
                         </div>
                     </CardContent>
@@ -121,25 +124,41 @@ export default function ProfileContent() {
             <TabsContent value="account" className="space-y-6">
                 <Card className="border-stone-200">
                     <CardHeader>
-                        <CardTitle>Account Settings</CardTitle>
-                        <CardDescription>Manage your account preferences and data.</CardDescription>
+                        <CardTitle>{t("profile.account.title")}</CardTitle>
+                        <CardDescription>{t("profile.account.description")}</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <div className="flex items-center justify-between">
                             <div className="space-y-1">
-                                <Label className="text-base">Account Status</Label>
-                                <p className="text-muted-foreground text-sm">Your account is currently active</p>
+                                <Label className="text-base">{t("profile.account.status")}</Label>
+                                <p className="text-muted-foreground text-sm">{t("profile.account.status.desc")}</p>
                             </div>
                             <Badge variant="outline" className="border-green-200 bg-green-50 text-green-700">
-                                Active
+                                {t("common.active")}
                             </Badge>
                         </div>
                         <Separator />
                         <div className="flex items-center justify-between">
                             <div className="space-y-1">
-                                <Label className="text-base">Account Visibility</Label>
+                                <Label className="text-base">{t("profile.account.language")}</Label>
+                                <p className="text-muted-foreground text-sm">{t("profile.account.language.desc")}</p>
+                            </div>
+                            <Select value={language} onValueChange={(val) => setLanguage(val as "en" | "ko")}>
+                                <SelectTrigger className="w-[180px]">
+                                    <SelectValue placeholder="Language" />
+                                </SelectTrigger>
+                                <SelectContent className="border-stone-200">
+                                    <SelectItem value="en">English</SelectItem>
+                                    <SelectItem value="ko">한국어</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <Separator />
+                        <div className="flex items-center justify-between">
+                            <div className="space-y-1">
+                                <Label className="text-base">{t("profile.account.visibility")}</Label>
                                 <p className="text-muted-foreground text-sm">
-                                    Make your profile visible to other users
+                                    {t("profile.account.visibility.desc")}
                                 </p>
                             </div>
                             <Switch defaultChecked />
@@ -147,30 +166,30 @@ export default function ProfileContent() {
                         <Separator />
                         <div className="flex items-center justify-between">
                             <div className="space-y-1">
-                                <Label className="text-base">Data Export</Label>
-                                <p className="text-muted-foreground text-sm">Download a copy of your data</p>
+                                <Label className="text-base">{t("profile.account.export")}</Label>
+                                <p className="text-muted-foreground text-sm">{t("profile.account.export.desc")}</p>
                             </div>
-                            <Button variant="outline" className="border-stone-200">Export Data</Button>
+                            <Button variant="outline" className="border-stone-200">{t("common.export")}</Button>
                         </div>
                     </CardContent>
                 </Card>
 
                 <Card className="border-destructive/50">
                     <CardHeader>
-                        <CardTitle className="text-destructive">Danger Zone</CardTitle>
-                        <CardDescription>Irreversible and destructive actions</CardDescription>
+                        <CardTitle className="text-destructive">{t("profile.account.danger")}</CardTitle>
+                        <CardDescription>{t("profile.account.danger.desc")}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="flex items-center justify-between">
                             <div className="space-y-1">
-                                <Label className="text-base">Delete Account</Label>
+                                <Label className="text-base">{t("profile.account.delete")}</Label>
                                 <p className="text-muted-foreground text-sm">
-                                    Permanently delete your account and all data
+                                    {t("profile.account.delete.desc")}
                                 </p>
                             </div>
                             <Button variant="destructive">
                                 <Trash2 className="mr-2 h-4 w-4" />
-                                Delete Account
+                                {t("profile.account.delete")}
                             </Button>
                         </div>
                     </CardContent>
@@ -181,25 +200,25 @@ export default function ProfileContent() {
             <TabsContent value="membership" className="space-y-6">
                 <Card className="border-stone-200">
                     <CardHeader>
-                        <CardTitle>Membership Plan</CardTitle>
-                        <CardDescription>Manage your subscription and billing details.</CardDescription>
+                        <CardTitle>{t("profile.membership.title")}</CardTitle>
+                        <CardDescription>{t("profile.membership.description")}</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 border border-stone-100 rounded-lg bg-stone-50/50">
                             <div className="space-y-1">
-                                <Label className="text-base font-semibold text-stone-800">Current Plan</Label>
+                                <Label className="text-base font-semibold text-stone-800">{t("profile.membership.current")}</Label>
                                 <div className="flex items-center gap-2 mt-1">
                                     <span className="text-2xl font-bold text-stone-900">{currentTier}</span>
                                     {currentTier === "ROOKIE" ? (
-                                        <Badge variant="outline" className="text-stone-500 font-normal">Free</Badge>
+                                        <Badge variant="outline" className="text-stone-500 font-normal">{t("profile.membership.free")}</Badge>
                                     ) : (
-                                        <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none font-semibold">Active</Badge>
+                                        <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none font-semibold">{t("common.active")}</Badge>
                                     )}
                                 </div>
                                 <p className="text-sm text-stone-500 mt-1">
                                     {currentTier === "ROOKIE"
-                                        ? "Upgrade to unlock advanced F1 data analysis features."
-                                        : "You are currently enjoying premium features."}
+                                        ? t("profile.membership.upgrade.msg")
+                                        : t("profile.membership.premium.msg")}
                                 </p>
                             </div>
 
@@ -208,7 +227,7 @@ export default function ProfileContent() {
                                 className={currentTier === "ROOKIE" ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-stone-900 hover:bg-stone-800 text-white cursor-pointer"}
                             >
                                 <CreditCard className="mr-2 h-4 w-4" />
-                                {currentTier === "ROOKIE" ? "Upgrade Membership" : "Manage Membership"}
+                                {currentTier === "ROOKIE" ? t("profile.membership.upgrade.btn") : t("profile.membership.manage.btn")}
                             </Button>
                         </div>
 
@@ -217,11 +236,11 @@ export default function ProfileContent() {
                                 <Separator />
                                 <div className="flex items-center justify-between">
                                     <div className="space-y-1">
-                                        <Label className="text-base text-stone-800">Cancel Subscription</Label>
-                                        <p className="text-muted-foreground text-sm">Cancel your current billing cycle.</p>
+                                        <Label className="text-base text-stone-800">{t("profile.membership.cancel")}</Label>
+                                        <p className="text-muted-foreground text-sm">{t("profile.membership.cancel.desc")}</p>
                                     </div>
                                     <Button variant="outline" className="text-red-600 hover:text-red-700 hover:bg-red-50 border-stone-200">
-                                        Cancel Subscription
+                                        {t("profile.membership.cancel")}
                                     </Button>
                                 </div>
                             </>
@@ -234,44 +253,43 @@ export default function ProfileContent() {
             <TabsContent value="security" className="space-y-6">
                 <Card className="border-stone-200">
                     <CardHeader>
-                        <CardTitle>Security Settings</CardTitle>
-                        <CardDescription>Manage your account security and authentication.</CardDescription>
+                        <CardTitle>{t("profile.security.title")}</CardTitle>
+                        <CardDescription>{t("profile.security.desc")}</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <div className="space-y-1">
-                                    <Label className="text-base">Password</Label>
-                                    <p className="text-muted-foreground text-sm">Last changed 3 months ago</p>
+                                    <Label className="text-base">{t("profile.security.password")}</Label>
                                 </div>
                                 <Button variant="outline" className="border-stone-200">
                                     <Key className="mr-2 h-4 w-4" />
-                                    Change Password
+                                    {t("profile.security.password.change")}
                                 </Button>
                             </div>
                             <Separator />
                             <div className="flex items-center justify-between">
                                 <div className="space-y-1">
-                                    <Label className="text-base">Two-Factor Authentication</Label>
+                                    <Label className="text-base">{t("profile.security.2fa")}</Label>
                                     <p className="text-muted-foreground text-sm">
-                                        Add an extra layer of security to your account
+                                        {t("profile.security.2fa.desc")}
                                     </p>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Badge variant="outline" className="border-green-200 bg-green-50 text-green-700">
-                                        Enabled
+                                        {t("profile.security.2fa.enabled")}
                                     </Badge>
                                     <Button variant="outline" size="sm" className="border-stone-200">
-                                        Configure
+                                        {t("profile.security.2fa.config")}
                                     </Button>
                                 </div>
                             </div>
                             <Separator />
                             <div className="flex items-center justify-between">
                                 <div className="space-y-1">
-                                    <Label className="text-base">Login Notifications</Label>
+                                    <Label className="text-base">{t("profile.security.login_notif")}</Label>
                                     <p className="text-muted-foreground text-sm">
-                                        Get notified when someone logs into your account
+                                        {t("profile.security.login_notif.desc")}
                                     </p>
                                 </div>
                                 <Switch defaultChecked />
@@ -279,14 +297,14 @@ export default function ProfileContent() {
                             <Separator />
                             <div className="flex items-center justify-between">
                                 <div className="space-y-1">
-                                    <Label className="text-base">Active Sessions</Label>
+                                    <Label className="text-base">{t("profile.security.sessions")}</Label>
                                     <p className="text-muted-foreground text-sm">
-                                        Manage devices that are logged into your account
+                                        {t("profile.security.sessions.desc")}
                                     </p>
                                 </div>
                                 <Button variant="outline" className="border-stone-200">
                                     <Shield className="mr-2 h-4 w-4" />
-                                    View Sessions
+                                    {t("profile.security.sessions.view")}
                                 </Button>
                             </div>
                         </div>
@@ -298,24 +316,24 @@ export default function ProfileContent() {
             <TabsContent value="notifications" className="space-y-6">
                 <Card className="border-stone-200">
                     <CardHeader>
-                        <CardTitle>Notification Preferences</CardTitle>
-                        <CardDescription>Choose what notifications you want to receive.</CardDescription>
+                        <CardTitle>{t("profile.notif.title")}</CardTitle>
+                        <CardDescription>{t("profile.notif.desc")}</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <div className="space-y-1">
-                                    <Label className="text-base">Email Notifications</Label>
-                                    <p className="text-muted-foreground text-sm">Receive notifications via email</p>
+                                    <Label className="text-base">{t("profile.notif.email")}</Label>
+                                    <p className="text-muted-foreground text-sm">{t("profile.notif.email.desc")}</p>
                                 </div>
                                 <Switch defaultChecked />
                             </div>
                             <Separator />
                             <div className="flex items-center justify-between">
                                 <div className="space-y-1">
-                                    <Label className="text-base">Push Notifications</Label>
+                                    <Label className="text-base">{t("profile.notif.push")}</Label>
                                     <p className="text-muted-foreground text-sm">
-                                        Receive push notifications in your browser
+                                        {t("profile.notif.push.desc")}
                                     </p>
                                 </div>
                                 <Switch />
@@ -323,9 +341,9 @@ export default function ProfileContent() {
                             <Separator />
                             <div className="flex items-center justify-between">
                                 <div className="space-y-1">
-                                    <Label className="text-base">Marketing Emails</Label>
+                                    <Label className="text-base">{t("profile.notif.marketing")}</Label>
                                     <p className="text-muted-foreground text-sm">
-                                        Receive emails about new features and updates
+                                        {t("profile.notif.marketing.desc")}
                                     </p>
                                 </div>
                                 <Switch defaultChecked />
@@ -333,9 +351,9 @@ export default function ProfileContent() {
                             <Separator />
                             <div className="flex items-center justify-between">
                                 <div className="space-y-1">
-                                    <Label className="text-base">Weekly Summary</Label>
+                                    <Label className="text-base">{t("profile.notif.weekly")}</Label>
                                     <p className="text-muted-foreground text-sm">
-                                        Get a weekly summary of your activity
+                                        {t("profile.notif.weekly.desc")}
                                     </p>
                                 </div>
                                 <Switch defaultChecked />
@@ -343,9 +361,9 @@ export default function ProfileContent() {
                             <Separator />
                             <div className="flex items-center justify-between">
                                 <div className="space-y-1">
-                                    <Label className="text-base">Security Alerts</Label>
+                                    <Label className="text-base">{t("profile.notif.security")}</Label>
                                     <p className="text-muted-foreground text-sm">
-                                        Important security notifications (always enabled)
+                                        {t("profile.notif.security.desc")}
                                     </p>
                                 </div>
                                 <Switch checked disabled />
