@@ -4,6 +4,9 @@ import * as React from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api/client";
+import { useLanguage } from "@/contexts/language-context";
+import { formatDriverName, formatTeamName } from "@/lib/utils";
+import { Info } from "lucide-react";
 
 import {
     Breadcrumb,
@@ -16,23 +19,43 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 type DriverRank = {
-    position: number;
+    position: number | null;
     driverId: string;
     name: string;
     team: string;
+    teamColor?: string;
     points: number;
 };
 
 type TeamRank = {
-    position: number;
+    position: number | null;
     teamId: string;
     name: string;
+    teamColor?: string;
     points: number;
 };
 
 const TEAM_DISPLAY_MAP: Record<string, string> = {
+    // DB constructor_id values
+    "mercedes": "Mercedes",
+    "red-bull": "Red Bull Racing",
+    "ferrari": "Ferrari",
+    "mclaren": "McLaren",
+    "aston-martin": "Aston Martin",
+    "alpine": "Alpine",
+    "williams": "Williams",
+    "haas": "Haas",
+    "racing-bulls": "RB",
+    "rb": "RB",
+    "kick-sauber": "Kick Sauber",
+    "audi": "Audi",
+    "cadillac": "Cadillac",
+
+    // Full names / Other variations
     "Mercedes-AMG Petronas Formula One Team": "Mercedes",
     "Mercedes": "Mercedes",
     "Oracle Red Bull Racing": "Red Bull Racing",
@@ -66,48 +89,23 @@ const TEAM_COLORS: Record<string, string> = {
 
 export default function RankGrid() {
     const router = useRouter();
-    const [year, setYear] = React.useState<string>("2025");
+    const { language } = useLanguage();
+    const [year, setYear] = React.useState<string>("2026");
     const [driverRanks, setDriverRanks] = React.useState<DriverRank[]>([]);
     const [teamRanks, setTeamRanks] = React.useState<TeamRank[]>([]);
     const [isLoading, setIsLoading] = React.useState<boolean>(true);
+
+    const years = Array.from({ length: 2026 - 2000 + 1 }, (_, i) => (2026 - i).toString());
 
     React.useEffect(() => {
         const fetchRanks = async () => {
             setIsLoading(true);
             try {
-                // Mocking data for now as we don't have real ranking API yet
-                // In real scenario, we would call:
-                // const driverRes = await api.get(`/seasons/${year}/driver-ranks`);
-                // const teamRes = await api.get(`/seasons/${year}/team-ranks`);
+                const driverRes = await api.get(`/seasons/${year}/standings/drivers`);
+                const teamRes = await api.get(`/seasons/${year}/standings/constructors`);
 
-                const mockDrivers: DriverRank[] = [
-                    { position: 1, driverId: "max_verstappen", name: "Max Verstappen", team: "Red Bull Racing", points: 454 },
-                    { position: 2, driverId: "lando_norris", name: "Lando Norris", team: "McLaren", points: 331 },
-                    { position: 3, driverId: "charles_leclerc", name: "Charles Leclerc", team: "Ferrari", points: 307 },
-                    { position: 4, driverId: "oscar_piastri", name: "Oscar Piastri", team: "McLaren", points: 262 },
-                    { position: 5, driverId: "carlos_sainz", name: "Carlos Sainz", team: "Ferrari", points: 244 },
-                    { position: 6, driverId: "lewis_hamilton", name: "Lewis Hamilton", team: "Mercedes", points: 190 },
-                    { position: 7, driverId: "george_russell", name: "George Russell", team: "Mercedes", points: 180 },
-                    { position: 8, driverId: "sergio_perez", name: "Sergio Perez", team: "Red Bull Racing", points: 151 },
-                    { position: 9, driverId: "fernando_alonso", name: "Fernando Alonso", team: "Aston Martin", points: 62 },
-                    { position: 10, driverId: "nico_hulkenberg", name: "Nico Hulkenberg", team: "Haas", points: 31 },
-                ];
-
-                const mockTeams: TeamRank[] = [
-                    { position: 1, teamId: "mclaren", name: "McLaren", points: 593 },
-                    { position: 2, teamId: "ferrari", name: "Ferrari", points: 557 },
-                    { position: 3, teamId: "redbullracing", name: "Red Bull Racing", points: 544 },
-                    { position: 4, teamId: "mercedes", name: "Mercedes", points: 382 },
-                    { position: 5, teamId: "astonmartin", name: "Aston Martin", points: 86 },
-                    { position: 6, teamId: "alpine", name: "Alpine", points: 49 },
-                    { position: 7, teamId: "haas", name: "Haas", points: 46 },
-                    { position: 8, teamId: "racingbulls", name: "Racing Bulls", points: 44 },
-                    { position: 9, teamId: "williams", name: "Williams", points: 17 },
-                    { position: 10, teamId: "kicksauber", name: "Kick Sauber", points: 0 },
-                ];
-
-                setDriverRanks(mockDrivers);
-                setTeamRanks(mockTeams);
+                setDriverRanks(driverRes.data || []);
+                setTeamRanks(teamRes.data || []);
             } catch (error) {
                 console.error("Error fetching ranks:", error);
             } finally {
@@ -124,22 +122,24 @@ export default function RankGrid() {
             <Breadcrumb className="mx-7 mt-6">
                 <BreadcrumbList>
                     <BreadcrumbItem>
-                        <BreadcrumbLink href="/dashboard" className="text-sm">Home</BreadcrumbLink>
+                        <BreadcrumbLink href="/dashboard" className="text-sm">{language === 'ko' ? '홈' : 'Home'}</BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbLink href="/dashboard/ranks" className="text-sm">Ranks</BreadcrumbLink>
+                        <BreadcrumbLink href="/dashboard/ranks" className="text-sm">
+                            {language === 'ko' ? '랭킹' : 'Ranks'}
+                        </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <Select value={year} onValueChange={setYear}>
-                            <SelectTrigger className="w-[100px] text-sm">
+                            <SelectTrigger className="w-fit text-sm">
                                 <SelectValue placeholder="Year" />
                             </SelectTrigger>
-                            <SelectContent className="border-stone-200">
-                                <SelectItem value="2025">2025</SelectItem>
-                                <SelectItem value="2024">2024</SelectItem>
-                                <SelectItem value="2023">2023</SelectItem>
+                            <SelectContent className="border-stone-200 h-[200px] overflow-y-auto">
+                                {years.map(y => (
+                                    <SelectItem key={y} value={y}>{y}</SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
                     </BreadcrumbItem>
@@ -152,11 +152,11 @@ export default function RankGrid() {
                 <h1 className="text-4xl font-bold">RANKS {year}</h1>
             </div>
 
-            <div className="mx-6 sm:pb-5 pb-5 sm:pb-15">
+            <div className="mx-6 sm:pb-5 pb-5 sm:pb-15 max-w-2xl">
                 <Tabs defaultValue="drivers" className="w-full">
                     <TabsList className="mb-6">
-                        <TabsTrigger value="drivers">Drivers Ranking</TabsTrigger>
-                        <TabsTrigger value="teams">Teams Ranking</TabsTrigger>
+                        <TabsTrigger value="drivers">{language === 'ko' ? '드라이버 순위' : 'Drivers Ranking'}</TabsTrigger>
+                        <TabsTrigger value="teams">{language === 'ko' ? '팀 순위' : 'Teams Ranking'}</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="drivers">
@@ -172,23 +172,28 @@ export default function RankGrid() {
                                 </TableHeader>
                                 <TableBody>
                                     {isLoading ? (
-                                        <TableRow>
-                                            <TableCell colSpan={4} className="text-center py-10">Loading ranks...</TableCell>
-                                        </TableRow>
+                                        Array.from({ length: 10 }).map((_, idx) => (
+                                            <TableRow key={idx} className="border-b-stone-200">
+                                                <TableCell className="py-4"><Skeleton className="h-6 w-8" /></TableCell>
+                                                <TableCell><Skeleton className="h-6 w-40" /></TableCell>
+                                                <TableCell><Skeleton className="h-6 w-32" /></TableCell>
+                                                <TableCell className="text-right"><Skeleton className="h-6 w-12 ml-auto" /></TableCell>
+                                            </TableRow>
+                                        ))
                                     ) : (
-                                        driverRanks.map((rank) => (
-                                            <TableRow key={rank.driverId} className="cursor-pointer hover:bg-stone-50 transition-colors border-b-stone-200">
+                                        driverRanks.map((rank, idx) => (
+                                            <TableRow key={`${rank.driverId}-${idx}`} className="cursor-pointer hover:bg-stone-50 transition-colors border-b-stone-200">
                                                 <TableCell className="font-bold" style={{ fontFamily: "'Formula 1', monospace" }}>
-                                                    {rank.position}
+                                                    {rank.position ?? "-"}
                                                 </TableCell>
-                                                <TableCell className="font-semibold">{rank.name}</TableCell>
+                                                <TableCell className="font-semibold">{formatDriverName(rank.driverId, language)}</TableCell>
                                                 <TableCell>
                                                     <div className="flex items-center gap-2">
                                                         <div
                                                             className="w-1 h-4 rounded-full"
-                                                            style={{ backgroundColor: TEAM_COLORS[TEAM_DISPLAY_MAP[rank.team] || rank.team] || "#ccc" }}
+                                                            style={{ backgroundColor: rank.teamColor || "#ccc" }}
                                                         />
-                                                        {TEAM_DISPLAY_MAP[rank.team] || rank.team}
+                                                        {formatTeamName(rank.team, language)}
                                                     </div>
                                                 </TableCell>
                                                 <TableCell className="text-right font-bold tabular-nums">
@@ -214,22 +219,26 @@ export default function RankGrid() {
                                 </TableHeader>
                                 <TableBody>
                                     {isLoading ? (
-                                        <TableRow>
-                                            <TableCell colSpan={3} className="text-center py-10">Loading ranks...</TableCell>
-                                        </TableRow>
+                                        Array.from({ length: 10 }).map((_, idx) => (
+                                            <TableRow key={idx} className="border-b-stone-200">
+                                                <TableCell className="py-4"><Skeleton className="h-6 w-8" /></TableCell>
+                                                <TableCell><Skeleton className="h-6 w-40" /></TableCell>
+                                                <TableCell className="text-right"><Skeleton className="h-6 w-12 ml-auto" /></TableCell>
+                                            </TableRow>
+                                        ))
                                     ) : (
-                                        teamRanks.map((rank) => (
-                                            <TableRow key={rank.teamId} className="cursor-pointer hover:bg-stone-50 transition-colors border-b-stone-200">
+                                        teamRanks.map((rank, idx) => (
+                                            <TableRow key={`${rank.teamId}-${idx}`} className="cursor-pointer hover:bg-stone-50 transition-colors border-b-stone-200">
                                                 <TableCell className="font-bold" style={{ fontFamily: "'Formula 1', monospace" }}>
-                                                    {rank.position}
+                                                    {rank.position ?? "-"}
                                                 </TableCell>
                                                 <TableCell>
                                                     <div className="flex items-center gap-2">
                                                         <div
                                                             className="w-1 h-4 rounded-full"
-                                                            style={{ backgroundColor: TEAM_COLORS[TEAM_DISPLAY_MAP[rank.name] || rank.name] || "#ccc" }}
+                                                            style={{ backgroundColor: rank.teamColor || "#ccc" }}
                                                         />
-                                                        <span className="font-semibold">{rank.name}</span>
+                                                        <span className="font-semibold">{formatTeamName(rank.teamId, language)}</span>
                                                     </div>
                                                 </TableCell>
                                                 <TableCell className="text-right font-bold tabular-nums">
@@ -241,6 +250,19 @@ export default function RankGrid() {
                                 </TableBody>
                             </Table>
                         </div>
+                        {year === "2018" && (
+                            <div className="mt-6">
+                                <Alert className="bg-stone-50 text-stone-800 border-stone-200">
+                                    <Info className="h-4 w-4" />
+                                    <AlertTitle>{language === 'ko' ? '2018 시즌 Force India 안내' : '2018 Season Force India Notice'}</AlertTitle>
+                                    <AlertDescription className="text-stone-600 leading-relaxed mt-2">
+                                        {language === 'ko' 
+                                            ? '기존 Force India 팀은 시즌 중 법정관리로 인해 챔피언십에서 제외(Excluded)되어 전반기에 획득한 59점이 모두 몰수되었습니다. 벨기에 GP부터는 자산을 인수한 새로운 팀인 Racing Point Force India가 0점부터 새롭게 참가하여 점수를 기록했습니다.' 
+                                            : 'The original Force India team was excluded from the championship mid-season due to administration, forfeiting all points. From the Belgian GP onwards, the new Racing Point Force India team entered as a new constructor, starting with 0 points.'}
+                                    </AlertDescription>
+                                </Alert>
+                            </div>
+                        )}
                     </TabsContent>
                 </Tabs>
             </div>

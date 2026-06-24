@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLanguage } from "@/contexts/language-context";
 import { Search, Grid3X3, List, Heart, Star, ShoppingCart, Filter } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,7 +20,6 @@ import { useProductStore } from "@/store/useProductStore";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useRouter, usePathname } from "next/navigation";
 import * as React from "react";
-
 const categories = [
     { id: "all", label: "All Products", icon: "🏪" },
     { id: "apparel", label: "Team Apparel", icon: "👕" },
@@ -110,6 +110,8 @@ function FilterSection() {
 }
 
 export function GoodsProduct() {
+    const { language } = useLanguage();
+
     const {
         filteredProducts, viewMode, searchQuery,
         setViewMode, setSearchQuery, applyFilters
@@ -129,11 +131,11 @@ export function GoodsProduct() {
             <Breadcrumb className="mx-7 mt-6">
                 <BreadcrumbList>
                     <BreadcrumbItem>
-                        <BreadcrumbLink href="/dashboard" className="text-sm">Home</BreadcrumbLink>
+                        <BreadcrumbLink href="/dashboard" className="text-sm">{language === 'ko' ? '홈' : 'Home'}</BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbLink href="/dashboard/store/product" className="text-sm">Store</BreadcrumbLink>
+                        <BreadcrumbLink href="/dashboard/store/product" className="text-sm">{language === 'ko' ? '스토어' : 'Store'}</BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
@@ -141,7 +143,7 @@ export function GoodsProduct() {
                             value={currentTab}
                             onValueChange={(val) => router.push(`/dashboard/store/${val}`)}
                         >
-                            <SelectTrigger className="w-[120px] text-sm h-8">
+                            <SelectTrigger className="w-fit text-sm h-8">
                                 <SelectValue placeholder="Menu" />
                             </SelectTrigger>
                             <SelectContent className="border-stone-200">

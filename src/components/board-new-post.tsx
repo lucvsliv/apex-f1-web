@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useLanguage } from "@/contexts/language-context";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +15,8 @@ import api from "@/lib/api/client";
 import { toast } from "sonner";
 
 export default function BoardNewPost() {
+    const { language } = useLanguage();
+
     const router = useRouter();
     const [title, setTitle] = React.useState("");
     const [content, setContent] = React.useState("");
@@ -46,11 +49,11 @@ export default function BoardNewPost() {
             <Breadcrumb className="mx-7 mt-6">
                 <BreadcrumbList>
                     <BreadcrumbItem>
-                        <BreadcrumbLink href="/dashboard" className="text-sm">Home</BreadcrumbLink>
+                        <BreadcrumbLink href="/dashboard" className="text-sm">{language === 'ko' ? '홈' : 'Home'}</BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbLink href="/dashboard/community" className="text-sm">Community</BreadcrumbLink>
+                        <BreadcrumbLink href="/dashboard/community" className="text-sm">{language === 'ko' ? '커뮤니티' : 'Community'}</BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>

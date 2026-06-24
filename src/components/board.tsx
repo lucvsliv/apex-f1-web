@@ -14,12 +14,15 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbS
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import * as React from "react";
+import { useLanguage } from "@/contexts/language-context";
 import { useRouter } from "next/navigation";
 
 import api from "@/lib/api/client";
 import { Post } from "@/types/post";
 
 export default function Board() {
+    const { language } = useLanguage();
+
   const router = useRouter();
   const [category, setCategory] = React.useState("All");
   const [posts, setPosts] = React.useState<Post[]>([]);
@@ -51,11 +54,11 @@ export default function Board() {
       <Breadcrumb className="mx-7 mt-6">
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard">Home</BreadcrumbLink>
+            <BreadcrumbLink href="/dashboard">{language === 'ko' ? '홈' : 'Home'}</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard/community">Community</BreadcrumbLink>
+            <BreadcrumbLink href="/dashboard/community">{language === 'ko' ? '커뮤니티' : 'Community'}</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>

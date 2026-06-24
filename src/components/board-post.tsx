@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useLanguage } from "@/contexts/language-context";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +27,8 @@ import api from "@/lib/api/client";
 import { Post } from "@/types/post";
 
 export default function BoardPost() {
+    const { language } = useLanguage();
+
     const router = useRouter();
     const params = useParams();
     const id = params?.id as string;
@@ -124,11 +127,11 @@ export default function BoardPost() {
             <Breadcrumb className="mx-7 mt-6">
                 <BreadcrumbList>
                     <BreadcrumbItem>
-                        <BreadcrumbLink href="/dashboard" className="text-sm">Home</BreadcrumbLink>
+                        <BreadcrumbLink href="/dashboard" className="text-sm">{language === 'ko' ? '홈' : 'Home'}</BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbLink href="/dashboard/community" className="text-sm">Community</BreadcrumbLink>
+                        <BreadcrumbLink href="/dashboard/community" className="text-sm">{language === 'ko' ? '커뮤니티' : 'Community'}</BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>

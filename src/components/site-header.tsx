@@ -3,25 +3,27 @@
 import { usePathname } from "next/navigation"
 import {SidebarTrigger} from "@/components/ui/sidebar";
 import {Separator} from "@/components/ui/separator";
+import { useLanguage } from "@/contexts/language-context";
 
 export function SiteHeader() {
     const pathname = usePathname()
+    const { t } = useLanguage()
 
     const pageTitleMap: Record<string, string> = {
-        "/dashboard": "Dashboard",
-        "/dashboard/agent/chat": "DoDo Agent",
-        "/dashboard/schedules": "Schedules",
-        "/dashboard/results": "Results",
-        "/dashboard/teams": "Teams",
-        "/dashboard/drivers": "Drivers",
-        "/dashboard/cars": "Cars",
-        "/dashboard/ranks": "Ranks",
-        "/dashboard/circuits": "Circuits",
-        "/dashboard/community": "Board",
-        "/dashboard/store/product": "Products",
-        "/dashboard/store/cart": "Cart",
-        "/dashboard/store/checkout": "Checkout",
-        "/dashboard/profile": "Account",
+        "/dashboard": t("sidebar.dashboard"),
+        "/dashboard/agent/chat": t("sidebar.chat"),
+        "/dashboard/schedules": t("sidebar.schedule"),
+        "/dashboard/results": t("sidebar.results"),
+        "/dashboard/teams": t("sidebar.teams"),
+        "/dashboard/drivers": t("sidebar.drivers"),
+        "/dashboard/cars": t("sidebar.cars"),
+        "/dashboard/ranks": t("sidebar.standings"),
+        "/dashboard/circuits": t("sidebar.circuits"),
+        "/dashboard/community": t("sidebar.community.free"),
+        "/dashboard/store/product": t("sidebar.store.products"),
+        "/dashboard/store/cart": t("sidebar.store.cart"),
+        "/dashboard/store/checkout": t("sidebar.store.checkout"),
+        "/dashboard/profile": t("profile.tabs.account"),
         "/dashboard/profile/edit": "Edit Profile",
         "/dashboard/reports": "Reports",
     }
@@ -30,9 +32,9 @@ export function SiteHeader() {
 
     if (!title) {
         if (pathname.startsWith("/dashboard/drivers/")) {
-            title = "Drivers"
+            title = t("sidebar.drivers")
         } else if (pathname.startsWith("/dashboard/teams/")) {
-            title = "Teams"
+            title = t("sidebar.teams")
         } else {
             title = "Untitled"
         }

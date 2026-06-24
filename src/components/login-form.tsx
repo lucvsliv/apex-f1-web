@@ -137,12 +137,7 @@ export function LoginForm({
                                 </p>
                             </div>
 
-                            {/* 에러 메시지 표시 영역 */}
-                            {errorMsg && (
-                                <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md text-center">
-                                    {errorMsg}
-                                </div>
-                            )}
+
 
                             <Field>
                                 <FieldLabel htmlFor="email">이메일</FieldLabel>
@@ -153,7 +148,7 @@ export function LoginForm({
                                     required
                                     value={formData.email}
                                     onChange={handleChange}
-                                    className="placeholder:text-stone-400/70"
+                                    className={cn("placeholder:text-stone-400/70", errorMsg && "border-red-500 focus-visible:ring-red-500")}
                                 />
                             </Field>
 
@@ -165,9 +160,12 @@ export function LoginForm({
                                     required
                                     value={formData.password}
                                     onChange={handleChange}
-                                    className="placeholder:text-stone-400/70"
+                                    className={cn("placeholder:text-stone-400/70", errorMsg && "border-red-500 focus-visible:ring-red-500")}
                                     placeholder="••••••••"
                                 />
+                                {errorMsg && (
+                                    <p className="text-[0.8rem] font-medium text-red-500 mt-1">{errorMsg}</p>
+                                )}
                                 <div className="text-right mt-1">
                                     <a
                                         href="#"

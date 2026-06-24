@@ -4,6 +4,8 @@ import * as React from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api/client";
+import { useLanguage } from "@/contexts/language-context";
+import { formatDriverName, formatTeamName } from "@/lib/utils";
 
 import {
     Breadcrumb,
@@ -48,7 +50,24 @@ const TEAM_DISPLAY_MAP: Record<string, string> = {
     "Audi Revolut F1 Team": "Audi"
 };
 
+const DriverGridImage = ({ src, alt, ...props }: any) => {
+    const [imgSrc, setImgSrc] = React.useState(src);
+    React.useEffect(() => {
+        setImgSrc(src);
+    }, [src]);
+
+    return (
+        <Image
+            {...props}
+            src={imgSrc}
+            alt={alt}
+            onError={() => setImgSrc("/images/driver-placeholder.png")}
+        />
+    );
+};
+
 export default function DriverGrid() {
+    const { language } = useLanguage();
     const router = useRouter();
     const [year, setYear] = React.useState<string>("2026");
     const [drivers, setDrivers] = React.useState<SeasonDriverSummary[]>([]);
@@ -79,16 +98,18 @@ export default function DriverGrid() {
             <Breadcrumb className="mx-7 mt-6">
                 <BreadcrumbList>
                     <BreadcrumbItem>
-                        <BreadcrumbLink href="/dashboard" className="text-sm">Home</BreadcrumbLink>
+                        <BreadcrumbLink href="/dashboard" className="text-sm">{language === 'ko' ? '홈' : 'Home'}</BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbLink href="/dashboard/schedules" className="text-sm">Drivers</BreadcrumbLink>
+                        <BreadcrumbLink href="/dashboard/drivers" className="text-sm">
+                            {language === 'ko' ? '드라이버' : 'Drivers'}
+                        </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <Select value={year} onValueChange={setYear}>
-                            <SelectTrigger className="w-[100px] text-sm">
+                            <SelectTrigger className="w-fit text-sm">
                                 <SelectValue placeholder="Year" />
                             </SelectTrigger>
                             <SelectContent className="border-stone-200">
@@ -127,7 +148,7 @@ export default function DriverGrid() {
                                     onClick={() => router.push(`/dashboard/drivers/${year}/${driver.driverId}`)}
                                 >
                                     <ItemHeader>
-                                        <Image
+                                        <DriverGridImage
                                             src={imagePath}
                                             alt={driver.name}
                                             width={300}
@@ -139,9 +160,9 @@ export default function DriverGrid() {
                                         <ItemTitle className="flex items-center justify-between gap-2">
                                             <span
                                                 className="font-bold text-sm truncate flex-1"
-                                                title={driver.name}
+                                                title={formatDriverName(driver.driverId, language)}
                                             >
-                                                {driver.name}
+                                                {formatDriverName(driver.driverId, language)}
                                             </span>
                                             {driver.number && (
                                                 <span className="text-gray-400 text-sm flex-shrink-0">
@@ -151,7 +172,7 @@ export default function DriverGrid() {
                                         </ItemTitle>
                                         <ItemDescription className="text-xs mt-1 truncate" title={driver.team}>
                                             <span className="font-semibold text-gray-700">
-                                                {TEAM_DISPLAY_MAP[driver.team] || driver.team}
+                                                {formatTeamName(TEAM_DISPLAY_MAP[driver.team] || driver.team, language)}
                                             </span>
                                         </ItemDescription>
                                     </ItemContent>

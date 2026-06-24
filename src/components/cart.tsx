@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useLanguage } from "@/contexts/language-context";
 import { ArrowLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -65,6 +66,8 @@ const cartData = [
 export type CartItemType = (typeof cartData)[number];
 
 export default function Cart() {
+    const { language } = useLanguage();
+
     const [cartItems, setCartItems] = useState<CartItemType[]>(cartData);
     const router = useRouter();
     const pathname = usePathname();
@@ -93,11 +96,11 @@ export default function Cart() {
             <Breadcrumb className="mx-7 mt-6">
                 <BreadcrumbList>
                     <BreadcrumbItem>
-                        <BreadcrumbLink href="/dashboard" className="text-sm">Home</BreadcrumbLink>
+                        <BreadcrumbLink href="/dashboard" className="text-sm">{language === 'ko' ? '홈' : 'Home'}</BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbLink href="/dashboard/store/product" className="text-sm">Store</BreadcrumbLink>
+                        <BreadcrumbLink href="/dashboard/store/product" className="text-sm">{language === 'ko' ? '스토어' : 'Store'}</BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
@@ -105,7 +108,7 @@ export default function Cart() {
                             value={currentTab}
                             onValueChange={(val) => router.push(`/dashboard/store/${val}`)}
                         >
-                            <SelectTrigger className="w-[120px] text-sm h-8">
+                            <SelectTrigger className="w-fit text-sm h-8">
                                 <SelectValue placeholder="Menu" />
                             </SelectTrigger>
                             <SelectContent className="border-stone-200">

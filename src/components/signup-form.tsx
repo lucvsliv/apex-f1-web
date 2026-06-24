@@ -37,7 +37,7 @@ export function SignupForm({
 
     const [nicknameStatus, setNicknameStatus] = useState<"idle" | "checking" | "available" | "duplicate" | "error">("idle");
     const [otp, setOtp] = useState("");
-    const [otpStatus, setOtpStatus] = useState<"idle" | "sent" | "verified" | "error">("idle");
+    const [otpStatus, setOtpStatus] = useState<"idle" | "sending" | "sent" | "verified" | "error" | "duplicate">("idle");
 
     const [presetAvatar] = useState("/avatars/default.svg");
     const [randomAvatar, setRandomAvatar] = useState("");
@@ -87,12 +87,18 @@ export function SignupForm({
 
     const handleSendOtp = async () => {
         if (!formData.email) return;
+        setOtpStatus("sending");
         try {
             await api.post("/auth/email/send", { email: formData.email });
             setOtpStatus("sent");
-        } catch (error) {
+        } catch (error: any) {
             console.error("이메일 발송 에러:", error);
-            alert("이메일 발송에 실패했습니다. 이메일 형식을 확인해 주세요.");
+            if (error.response?.status === 409) {
+                setOtpStatus("duplicate");
+            } else {
+                setOtpStatus("idle");
+                alert("이메일 발송에 실패했습니다. 이메일 형식을 확인해 주세요.");
+            }
         }
     };
 
@@ -409,75 +415,81 @@ export function SignupForm({
 
                                 <Field>
                                     <FieldLabel htmlFor="email">이메일</FieldLabel>
-                                    <div className="flex gap-2 items-start">
-                                        <Input
-                                            id="email"
-                                            type="email"
-                                            placeholder="example@example.com"
-                                            required
-                                            value={formData.email}
-                                            onChange={handleChange}
-                                            disabled={otpStatus === "verified"}
-                                            className={cn(
-                                                "placeholder:text-stone-300 flex-1",
-                                                otpStatus === "verified" && "bg-stone-50 border-blue-400 focus-visible:ring-blue-400 text-stone-500"
-                                            )}
-                                        />
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            onClick={handleSendOtp}
-                                            disabled={!formData.email || otpStatus === "verified"}
-                                            className={cn(
-                                                "shrink-0 transition-colors",
-                                                otpStatus === "verified"
-                                                    ? "border-blue-400 text-blue-400 border-stone-300 text-stone-500"
-                                                    : "border-stone-300 text-stone-600 hover:bg-stone-100 hover:text-stone-900"
-                                            )}
-                                        >
-                                            {otpStatus === "sent" ? "재전송" : (otpStatus === "verified" ? "인증완료" : "인증요청")}
-                                        </Button>
-                                    </div>
-                                </Field>
-
-                                {(otpStatus === "sent" || otpStatus === "error") && (
-                                    <Field>
+                                    <div className="flex flex-col gap-3">
                                         <div className="flex gap-2 items-start">
                                             <div className="flex-1 flex flex-col gap-1">
-                                                <InputOTP 
-                                                    maxLength={6} 
-                                                    value={otp} 
-                                                    onChange={(val) => {
-                                                        setOtp(val);
-                                                        if (otpStatus === "error") setOtpStatus("sent");
-                                                    }}
-                                                >
-                                                    <InputOTPGroup>
-                                                        <InputOTPSlot index={0} className={cn(otpStatus === "error" && "border-red-400 focus-visible:ring-red-400 text-red-500")} />
-                                                        <InputOTPSlot index={1} className={cn(otpStatus === "error" && "border-red-400 focus-visible:ring-red-400 text-red-500")} />
-                                                        <InputOTPSlot index={2} className={cn(otpStatus === "error" && "border-red-400 focus-visible:ring-red-400 text-red-500")} />
-                                                    </InputOTPGroup>
-                                                    <InputOTPSeparator />
-                                                    <InputOTPGroup>
-                                                        <InputOTPSlot index={3} className={cn(otpStatus === "error" && "border-red-400 focus-visible:ring-red-400 text-red-500")} />
-                                                        <InputOTPSlot index={4} className={cn(otpStatus === "error" && "border-red-400 focus-visible:ring-red-400 text-red-500")} />
-                                                        <InputOTPSlot index={5} className={cn(otpStatus === "error" && "border-red-400 focus-visible:ring-red-400 text-red-500")} />
-                                                    </InputOTPGroup>
-                                                </InputOTP>
-                                                {otpStatus === "error" && <span className="text-xs font-medium text-red-400">인증번호가 일치하지 않습니다.</span>}
+                                                <Input
+                                                    id="email"
+                                                    type="email"
+                                                    placeholder="example@example.com"
+                                                    required
+                                                    value={formData.email}
+                                                    onChange={handleChange}
+                                                    disabled={otpStatus === "verified"}
+                                                    className={cn(
+                                                        "w-full placeholder:text-stone-300",
+                                                        otpStatus === "verified" && "bg-stone-50 border-blue-400 focus-visible:ring-blue-400 text-stone-500",
+                                                        otpStatus === "duplicate" && "border-red-400 focus-visible:ring-red-400"
+                                                    )}
+                                                />
+                                                {otpStatus === "duplicate" && <span className="text-xs font-medium text-red-400">이미 가입된 이메일입니다. 로그인해 주세요.</span>}
                                             </div>
                                             <Button
                                                 type="button"
-                                                variant="secondary"
-                                                onClick={handleVerifyOtp}
-                                                disabled={otp.length !== 6}
-                                                className="shrink-0 bg-stone-100 text-stone-700 hover:bg-stone-200"
+                                                variant="outline"
+                                                onClick={handleSendOtp}
+                                                disabled={!formData.email || otpStatus === "verified" || otpStatus === "sending"}
+                                                className={cn(
+                                                    "shrink-0 transition-colors",
+                                                    otpStatus === "verified"
+                                                        ? "border-blue-400 text-blue-400 border-stone-300 text-stone-500"
+                                                        : "border-stone-300 text-stone-600 hover:bg-stone-100 hover:text-stone-900"
+                                                )}
                                             >
-                                                확인
+                                                {otpStatus === "sending" ? "전송중" : (otpStatus === "sent" ? "재전송" : (otpStatus === "verified" ? "인증완료" : "인증요청"))}
                                             </Button>
                                         </div>
-                                    </Field>
-                                )}
+
+                                        {(otpStatus === "sending" || otpStatus === "sent" || otpStatus === "error") && (
+                                            <div className="flex gap-2 items-start mt-1">
+                                                <div className="flex-1 flex flex-col gap-1">
+                                                    <InputOTP 
+                                                        maxLength={6} 
+                                                        value={otp} 
+                                                        onChange={(val) => {
+                                                            setOtp(val);
+                                                            if (otpStatus === "error") setOtpStatus("sent");
+                                                        }}
+                                                        disabled={otpStatus === "sending"}
+                                                    >
+                                                        <InputOTPGroup>
+                                                            <InputOTPSlot index={0} className={cn(otpStatus === "error" && "border-red-400 focus-visible:ring-red-400 text-red-500")} />
+                                                            <InputOTPSlot index={1} className={cn(otpStatus === "error" && "border-red-400 focus-visible:ring-red-400 text-red-500")} />
+                                                            <InputOTPSlot index={2} className={cn(otpStatus === "error" && "border-red-400 focus-visible:ring-red-400 text-red-500")} />
+                                                        </InputOTPGroup>
+                                                        <InputOTPSeparator />
+                                                        <InputOTPGroup>
+                                                            <InputOTPSlot index={3} className={cn(otpStatus === "error" && "border-red-400 focus-visible:ring-red-400 text-red-500")} />
+                                                            <InputOTPSlot index={4} className={cn(otpStatus === "error" && "border-red-400 focus-visible:ring-red-400 text-red-500")} />
+                                                            <InputOTPSlot index={5} className={cn(otpStatus === "error" && "border-red-400 focus-visible:ring-red-400 text-red-500")} />
+                                                        </InputOTPGroup>
+                                                    </InputOTP>
+                                                    {otpStatus === "error" && <span className="text-xs font-medium text-red-400">인증번호가 일치하지 않습니다.</span>}
+                                                    {otpStatus === "sending" && <span className="text-xs font-medium text-stone-400">이메일을 발송하고 있습니다...</span>}
+                                                </div>
+                                                <Button
+                                                    type="button"
+                                                    variant="secondary"
+                                                    onClick={handleVerifyOtp}
+                                                    disabled={otp.length !== 6 || otpStatus === "sending"}
+                                                    className="shrink-0 bg-stone-100 text-stone-700 hover:bg-stone-200"
+                                                >
+                                                    확인
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </Field>
 
                                 <Field>
                                     <Field className="grid grid-cols-2 gap-4">

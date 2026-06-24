@@ -42,13 +42,14 @@ api.interceptors.response.use(
     (error) => {
         // 백엔드에서 401(미인증) 또는 403(권한 없음) 에러가 내려오면
         if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-            if (typeof window !== "undefined" && !isAlerting) {
+            const isLoginRequest = error.config?.url?.includes("auth/login");
+            if (!isLoginRequest && typeof window !== "undefined" && !isAlerting) {
                 isAlerting = true;
                 // 토큰이 만료되었거나 변조되었으므로 스토리지에서 삭제
                 localStorage.removeItem("apex_access_token");
 
                 // 경고창 띄우고 로그인 페이지로 강제 이동
-                alert("인증이 만료되었습니다. 다시 로그인해 주세요.");
+                // alert("인증이 만료되었습니다. 다시 로그인해 주세요."); // Alert Removed
                 window.location.href = "/login";
             }
         }

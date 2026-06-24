@@ -13,72 +13,68 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail, } f
 import { IconBorderCornerPill, IconCar4wd, IconHelmet, IconCalendarEvent, } from "@tabler/icons-react";
 
 import { useUserStore } from "@/store/useUserStore"
-
-const data = {
-    logo: { name: "Apex F1", url: "/dashboard", icon: "/icons/logo.svg", },
-
-    aiAgent: [
-        {
-            title: (
-                <span className="bg-gradient-to-r from-stone-500 via-red-500 to-red-600 bg-clip-text text-transparent">
-                    DoDo 에이전트
-                </span>
-            ),
-            tooltip: "DoDo 에이전트",
-            url: "/dashboard/agent/chat",
-            icon: () => (
-                <div className="relative flex items-center justify-center">
-                    <svg width="0" height="0" className="absolute">
-                        <defs>
-                            <linearGradient id="sidebar-dodo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="10%" stopColor="#78716c" />
-                                <stop offset="70%" stopColor="#ef4444" />
-                                <stop offset="100%" stopColor="#dc2626" />
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                    <Sparkles
-                        className="size-4"
-                        style={{ stroke: "url(#sidebar-dodo-gradient)" }}
-                    />
-                </div>
-            ),
-        },
-    ],
-
-    navMain: [
-        { title: "경기 일정", url: "/dashboard/schedules", icon: IconCalendarEvent },
-        { title: "경기 결과", url: "/dashboard/results", icon: Timer },
-        { title: "팀 정보", url: "/dashboard/teams", icon: Shell },
-        { title: "드라이버", url: "/dashboard/drivers", icon: IconHelmet },
-        { title: "레이스카", url: "/dashboard/cars", icon: IconCar4wd },
-        { title: "랭킹", url: "/dashboard/ranks", icon: Trophy },
-        { title: "서킷 정보", url: "/dashboard/circuits", icon: LineSquiggle },
-    ],
-
-    originalGoods: [
-        { title: "상품 목록", url: "/dashboard/store/product", icon: Store },
-        { title: "장바구니", url: "/dashboard/store/cart", icon: ShoppingCart },
-        { title: "결제하기", url: "/dashboard/store/checkout", icon: CreditCard },
-    ],
-
-    community: [
-        { title: "자유게시판", url: "/dashboard/community", icon: MessageSquare },
-    ],
-
-    // projects: [
-    //     { name: "Board", url: "#", icon: ClipboardList },
-    //     { name: "Sales & Marketing", url: "#", icon: PieChart },
-    //     { name: "Travel", url: "#", icon: Map },
-    // ],
-}
+import { useLanguage } from "@/contexts/language-context"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const { user, isLoading, fetchUser } = useUserStore();
+    const { t } = useLanguage();
 
     useEffect(() => {
         fetchUser();
     }, [fetchUser]);
+
+    const data = {
+        logo: { name: "Apex F1", url: "/dashboard", icon: "/icons/logo.svg", },
+
+        aiAgent: [
+            {
+                title: (
+                    <span className="bg-gradient-to-r from-stone-500 via-red-500 to-red-600 bg-clip-text text-transparent">
+                        {t("sidebar.chat")}
+                    </span>
+                ),
+                tooltip: t("sidebar.chat"),
+                url: "/dashboard/agent/chat",
+                icon: () => (
+                    <div className="relative flex items-center justify-center">
+                        <svg width="0" height="0" className="absolute">
+                            <defs>
+                                <linearGradient id="sidebar-dodo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="10%" stopColor="#78716c" />
+                                    <stop offset="70%" stopColor="#ef4444" />
+                                    <stop offset="100%" stopColor="#dc2626" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <Sparkles
+                            className="size-4"
+                            style={{ stroke: "url(#sidebar-dodo-gradient)" }}
+                        />
+                    </div>
+                ),
+            },
+        ],
+
+        navMain: [
+            { title: t("sidebar.schedule"), url: "/dashboard/schedules", icon: IconCalendarEvent },
+            { title: t("sidebar.results"), url: "/dashboard/results", icon: Timer },
+            { title: t("sidebar.teams"), url: "/dashboard/teams", icon: Shell },
+            { title: t("sidebar.drivers"), url: "/dashboard/drivers", icon: IconHelmet },
+            { title: t("sidebar.cars"), url: "/dashboard/cars", icon: IconCar4wd },
+            { title: t("sidebar.standings"), url: "/dashboard/ranks", icon: Trophy },
+            { title: t("sidebar.circuits"), url: "/dashboard/circuits", icon: LineSquiggle },
+        ],
+
+        originalGoods: [
+            { title: t("sidebar.store.products"), url: "/dashboard/store/product", icon: Store },
+            { title: t("sidebar.store.cart"), url: "/dashboard/store/cart", icon: ShoppingCart },
+            { title: t("sidebar.store.checkout"), url: "/dashboard/store/checkout", icon: CreditCard },
+        ],
+
+        community: [
+            { title: t("sidebar.community.free"), url: "/dashboard/community", icon: MessageSquare },
+        ],
+    }
 
     const displayUser = {
         nickname: user?.nickname ?? (isLoading ? "로딩 중..." : "게스트"),
@@ -92,10 +88,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <ServiceLogo logo={data.logo} />
             </SidebarHeader>
             <SidebarContent>
-                <NavMain label="AI 에이전트" items={data.aiAgent} />
-                <NavMain label="데이터 분석" items={data.navMain} />
-                <NavMain label="굿즈 샵" items={data.originalGoods} />
-                <NavMain label="커뮤니티" items={data.community} />
+                <NavMain label={t("sidebar.group.ai")} items={data.aiAgent} />
+                <NavMain label={t("sidebar.group.data")} items={data.navMain} />
+                <NavMain label={t("sidebar.group.store")} items={data.originalGoods} />
+                <NavMain label={t("sidebar.group.community")} items={data.community} />
             </SidebarContent>
             <SidebarFooter>
                 <NavUser user={displayUser} />

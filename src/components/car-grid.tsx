@@ -4,14 +4,20 @@ import { Card, CardContent } from "@/components/ui/card";
 import * as React from "react";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { cars } from "@/data/cars";
-import { teams } from "@/data/teams";
 import { useRouter } from "next/navigation";
+import { useLanguage } from "@/contexts/language-context";
+import { SeasonCar } from "@/types/car";
+import api from "@/lib/api/client";
+import { formatTeamName } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function CarGrid() {
     const [windowWidth, setWindowWidth] = React.useState<number>(0);
-    const [year, setYear] = React.useState<string>("2025"); // 기본 연도
+    const [year, setYear] = React.useState<string>("2026"); // 기본 연도
+    const [cars, setCars] = React.useState<SeasonCar[]>([]);
+    const [isLoading, setIsLoading] = React.useState<boolean>(true);
     const router = useRouter();
+    const { language } = useLanguage();
 
     React.useEffect(() => {
         setWindowWidth(window.innerWidth);
@@ -20,6 +26,21 @@ export default function CarGrid() {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
+    React.useEffect(() => {
+        const fetchCars = async () => {
+            setIsLoading(true);
+            try {
+                const response = await api.get(`/seasons/${year}/cars`);
+                setCars(response.data);
+            } catch (error) {
+                console.error("Failed to fetch cars:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchCars();
+    }, [year]);
+
 
     return (
         <div>
@@ -27,22 +48,24 @@ export default function CarGrid() {
             <Breadcrumb className="mx-7 mt-6">
                 <BreadcrumbList>
                     <BreadcrumbItem>
-                        <BreadcrumbLink href="/dashboard" className="text-sm">Home</BreadcrumbLink>
+                        <BreadcrumbLink href="/dashboard" className="text-sm">{language === 'ko' ? '홈' : 'Home'}</BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbLink href="/dashboard/schedules" className="text-sm">Schedules</BreadcrumbLink>
+                        <BreadcrumbLink href="/dashboard/cars" className="text-sm">
+                            {language === 'ko' ? '레이스카' : 'Cars'}
+                        </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <Select value={year} onValueChange={setYear}>
-                            <SelectTrigger className="w-[100px] text-sm">
+                            <SelectTrigger className="w-fit text-sm">
                                 <SelectValue placeholder="Year" />
                             </SelectTrigger>
                             <SelectContent className="border-gray-200">
+                                <SelectItem value="2026">2026</SelectItem>
                                 <SelectItem value="2025">2025</SelectItem>
                                 <SelectItem value="2024">2024</SelectItem>
-                                <SelectItem value="2023">2023</SelectItem>
                             </SelectContent>
                         </Select>
                     </BreadcrumbItem>
@@ -58,50 +81,48 @@ export default function CarGrid() {
             {/* 팀 차들 */}
             <div className="relative w-full pt-5 px-6 sm:pb-5 rounded-xl overflow-hidden pb-5 sm:pb-15">
                 <div className="grid gap-6 grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-2">
-                    {cars.map((car, index) => {
-                        const showText = windowWidth >= 400;
-                        const team = teams.find(t => t.shortName === car.team);
-                        return (
-                            <Card
-                                key={car.team}
-                                className="relative flex flex-col p-4 rounded-lg transition-all bg-gradient-to-t border-b-0 border-gray-200 overflow-hidden min-h-[180px] cursor-pointer hover:shadow-xl"
-                                style={{
-                                    animationDelay: `${index * 0.1}s`,
-                                    animationFillMode: "backwards",
-                                }}
-                                onClick={() => router.push(`/cars/${car.team.toLowerCase()}`)}
-                            >
-                                <CardContent className={`flex flex-col justify-start gap-2 p-0 bg-transparent shadow-none w-full px-2 pt-2 ${!showText ? "items-center" : ""}`}>
-                                    {showText && (
-                                        <div className="flex flex-col">
-                                            <div className="flex items-center gap-2">
-                                                {team?.img && (
-                                                    <img
-                                                        src={team.img}
-                                                        alt={team.name}
-                                                        className="w-5 h-5"
-                                                    />
-                                                )}
-                                                <p className="text-sm">{team?.shortName}</p>
+                    {isLoading ? (
+                        Array.from({ length: 10 }).map((_, i) => (
+                            <Skeleton key={i} className="h-[250px] w-full rounded-lg" />
+                        ))
+                    ) : (
+                        cars.map((car, index) => {
+                            const showText = windowWidth >= 400;
+                            let urlConstructorId = car.constructorId.replace(/[-_]/g, '').toLowerCase();
+                            if (urlConstructorId === 'redbull') {
+                                urlConstructorId = 'redbullracing';
+                            }
+                            const imgUrl = `https://media.formula1.com/image/upload/c_lfill,h_224/q_auto/d_common:f1:${year}:fallback:car:${year}fallbackcarright.webp/v1740000001/common/f1/${year}/${urlConstructorId}/${year}${urlConstructorId}carright.webp`;
+                            return (
+                                <Card
+                                    key={car.constructorId}
+                                    className="relative flex flex-col p-4 rounded-lg transition-all bg-gradient-to-t border-b-0 border-gray-200 overflow-hidden min-h-[180px] cursor-pointer hover:shadow-xl"
+                                    style={{
+                                        animationDelay: `${index * 0.1}s`,
+                                        animationFillMode: "backwards",
+                                    }}
+                                    onClick={() => router.push(`/dashboard/teams/${car.constructorId}`)}
+                                >
+                                    <CardContent className={`flex flex-col justify-start gap-2 p-0 bg-transparent shadow-none w-full px-2 pt-2 ${!showText ? "items-center" : ""}`}>
+                                        {showText && (
+                                            <div className="flex flex-col">
+                                                <div className="flex items-center gap-2">
+                                                    <p className="text-sm">{formatTeamName(car.constructorId, language)}</p>
+                                                </div>
+                                                <p className="text-xl font-bold">{car.chassisName}</p>
                                             </div>
-                                            <p className="text-xl font-bold">{car.year} Car</p>
-                                        </div>
-                                    )}
-                                </CardContent>
+                                        )}
+                                    </CardContent>
 
-                                <img
-                                    src={car.img}
-                                    alt={`${car.team} Car`}
-                                    className="w-full h-40 object-contain rounded-[0.175rem] mt-2"
-                                />
-
-                                <div
-                                    className="absolute bottom-0 left-0 w-full h-1 pointer-events-none"
-                                    style={{ backgroundColor: team?.color }}
-                                />
-                            </Card>
-                        );
-                    })}
+                                    <img
+                                        src={imgUrl}
+                                        alt={`${formatTeamName(car.constructorId, language)} Car`}
+                                        className="w-full h-40 object-contain rounded-[0.175rem] mt-2"
+                                    />
+                                </Card>
+                            );
+                        })
+                    )}
                 </div>
             </div>
         </div>
