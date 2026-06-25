@@ -12,6 +12,7 @@ import { ArrowLeftToLine, ArrowRightToLine } from "lucide-react"
 
 import { RaceResult } from "@/types/result"
 import { Schedule } from "@/types/schedule"
+import api from "@/lib/api/client"
 import { useLanguage } from "@/contexts/language-context"
 import { formatDriverName, formatTeamName, formatGrandPrixId, formatGpName, translateCountry } from "@/lib/utils"
 
@@ -161,10 +162,8 @@ export function ResultTable() {
     React.useEffect(() => {
         const fetchSchedules = async () => {
             try {
-                const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
-                const response = await fetch(`${baseUrl}/api/v1/races/schedules?year=${year}`);
-                if (!response.ok) throw new Error("Failed to fetch schedules");
-                const data = await response.json();
+                const response = await api.get(`/races/schedules?year=${year}`);
+                const data = response.data;
                 setSchedules(data);
                 if (data.length > 0) {
                     if (prevYearRef.current !== year) {
@@ -193,10 +192,8 @@ export function ResultTable() {
         const fetchResults = async () => {
             setIsLoading(true);
             try {
-                const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
-                const response = await fetch(`${baseUrl}/api/v1/races/${raceId}/results`);
-                if (!response.ok) throw new Error("Failed to fetch results");
-                const data = await response.json();
+                const response = await api.get(`/races/${raceId}/results`);
+                const data = response.data;
                 setResults(data);
                 setSelectedRace(schedules.find(s => s.id.toString() === raceId));
             } catch (error) {

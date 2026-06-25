@@ -27,6 +27,7 @@ const calculateTimeLeft = (targetDate: Date): TimeLeft => {
 
 import { useLanguage } from "@/contexts/language-context";
 import { Schedule } from "@/types/schedule";
+import api from "@/lib/api/client";
 
 export function Countdown() {
     const { t } = useLanguage();
@@ -40,10 +41,8 @@ export function Countdown() {
         const fetchNextRace = async () => {
             try {
                 const year = new Date().getFullYear() > 2026 ? new Date().getFullYear() : 2026;
-                const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
-                const response = await fetch(`${baseUrl}/api/v1/races/schedules?year=${year}`);
-                if (!response.ok) throw new Error("Failed to fetch");
-                const schedules: Schedule[] = await response.json();
+                const response = await api.get(`/races/schedules?year=${year}`);
+                const schedules: Schedule[] = response.data;
                 
                 const now = new Date();
                 let nextTarget: Date | null = null;
