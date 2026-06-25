@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import * as React from "react";
 import { useRouter } from "next/navigation"; // useRouter 훅 사용
+import api from "@/lib/api/client";
 import { useLanguage } from "@/contexts/language-context";
 import { formatGpName, formatGrandPrixId, translateCountry } from "@/lib/utils";
 
@@ -60,13 +61,9 @@ export function ScheduleCard() {
 
     React.useEffect(() => {
         setIsLoading(true);
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-        fetch(`${baseUrl}/api/v1/races/schedules?year=${year}`)
+        api.get(`/races/schedules?year=${year}`)
             .then(res => {
-                if (!res.ok) {
-                    throw new Error(`HTTP error! status: ${res.status}`);
-                }
-                return res.json();
+                return res.data;
             })
             .then(data => {
                 setSchedules(data);
