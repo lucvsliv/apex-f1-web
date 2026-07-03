@@ -29,47 +29,13 @@ import { useLanguage } from "@/contexts/language-context";
 import { Schedule } from "@/types/schedule";
 import api from "@/lib/api/client";
 
-export function Countdown() {
+export function Countdown({ targetDate }: { targetDate: Date }) {
     const { t } = useLanguage();
-    const [targetDate, setTargetDate] = useState<Date | null>(null);
     const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);
-        const fetchNextRace = async () => {
-            try {
-                const year = new Date().getFullYear() > 2026 ? new Date().getFullYear() : 2026;
-                const response = await api.get(`/races/schedules?year=${year}`);
-                const schedules: Schedule[] = response.data;
-                
-                const now = new Date();
-                let nextTarget: Date | null = null;
-
-                for (const schedule of schedules) {
-                    const raceSession = schedule.sessions.find(s => s.name.toLowerCase() === "race" || s.name.toLowerCase() === "레이스");
-                    if (raceSession) {
-                        const raceDate = new Date(raceSession.time);
-                        if (raceDate > now) {
-                            nextTarget = raceDate;
-                            break;
-                        }
-                    }
-                }
-                
-                if (nextTarget) {
-                    setTargetDate(nextTarget);
-                } else {
-                    setTargetDate(new Date("2026-07-12T22:00:00+09:00"));
-                }
-            } catch (error) {
-                console.error("Failed to fetch next race:", error);
-                setTargetDate(new Date("2026-07-12T22:00:00+09:00"));
-            }
-        };
-
-        fetchNextRace();
     }, []);
 
     useEffect(() => {

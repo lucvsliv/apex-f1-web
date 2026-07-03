@@ -9,7 +9,7 @@ type Language = "en" | "ko";
 interface LanguageContextType {
     language: Language;
     setLanguage: (lang: Language) => void;
-    t: (key: string) => string;
+    t: (key: string, vars?: Record<string, string>) => string;
 }
 
 const dictionaries = {
@@ -39,9 +39,15 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem("app_language", lang);
     };
 
-    const t = (key: string): string => {
+    const t = (key: string, vars?: Record<string, string>): string => {
         const dict = dictionaries[language] as Record<string, string>;
-        return dict[key] || key;
+        let text = dict[key] || key;
+        if (vars) {
+            Object.entries(vars).forEach(([k, v]) => {
+                text = text.replace(new RegExp(`{{${k}}}`, 'g'), v);
+            });
+        }
+        return text;
     };
 
     return (
